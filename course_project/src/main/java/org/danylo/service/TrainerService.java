@@ -67,7 +67,7 @@ public class TrainerService {
     }
 
     public boolean isUserTrainedWithTrainer (User user, int trainerId) {
-        return trainerRepository.getUserWhoTrainedWithTrainer(trainerId).contains(user.getId());
+        return trainerRepository.getUsersWhoTrainedWithTrainer(trainerId).contains(user.getId());
     }
 
     public boolean isReliable(Trainer trainer) {
