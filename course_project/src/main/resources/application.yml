@@ -3,8 +3,6 @@ spring:
     active: test
 ---
 
-server:
-  port: 8080
 spring:
   config:
     activate:
@@ -15,8 +13,6 @@ spring:
     password: postgres
 ---
 
-server:
-  port: 8081
 spring:
   config:
     activate:
@@ -27,8 +23,6 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 ---
 
-server:
-  port: 8082
 spring:
   config:
     activate:
