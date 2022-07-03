@@ -12,12 +12,10 @@ import javax.validation.Valid;
 @Controller
 public class AuthorizationController {
     UserService userService;
-    UserRepository userRepository;
 
     @Autowired
-    public AuthorizationController(UserService userService, UserRepository userRepository) {
+    public AuthorizationController(UserService userService) {
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping("/login")
@@ -32,12 +30,6 @@ public class AuthorizationController {
 
     @PostMapping("/signup")
     public String registerIn(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
-        String returnedPage = "redirect:/login";
-        if (bindingResult.hasFieldErrors()) {
-            returnedPage = "authorization/signup";
-        } else {
-            userRepository.saveUser(user);
-        }
-        return returnedPage;
+        return userService.save(user, bindingResult);
     }
 }

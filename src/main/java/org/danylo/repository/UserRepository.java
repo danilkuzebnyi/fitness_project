@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
+import java.util.List;
 
 @Repository
 public class UserRepository extends BaseRepository {
@@ -42,6 +43,15 @@ public class UserRepository extends BaseRepository {
         namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
     }
 
+    public List<User> findAll() {
+        try {
+            String sql = "SELECT * FROM users";
+            return namedParameterJdbcTemplate.query(sql, new UserRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new UsernameNotFoundException("No users in database");
+        }
+    }
+
     public User findByUsername(String username) {
         try {
             String sql = "SELECT * FROM users WHERE username=:username";
@@ -50,6 +60,12 @@ public class UserRepository extends BaseRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new UsernameNotFoundException(username);
         }
+    }
+
+    public List<User> findUsersByUsername(String username) {
+        String sql = "SELECT * FROM users WHERE username=:username";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("username", username);
+        return namedParameterJdbcTemplate.query(sql, namedParameters, new UserRowMapper());
     }
 
     public User getUserByTrainer(Trainer trainer) {
