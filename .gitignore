@@ -1,0 +1,8 @@
+.idea
+.idea_modules
+.gradle
+out
+HELP.md
+build
+*.iws
+.log

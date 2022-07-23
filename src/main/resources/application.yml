@@ -1,0 +1,35 @@
+spring:
+  profiles:
+    active: test
+---
+
+server:
+  port: 8080
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/course-project
+    username: postgres
+    password: postgres
+---
+
+server:
+  port: 8081
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:postgresql://localhost:5432/course-project-test
+    username: postgres
+    password: postgres
+---
+
+server:
+  port: 8082
+spring:
+  config:
+    activate:
+      on-profile: prod
