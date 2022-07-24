@@ -12,10 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     UserService userService;
 
-    public WebSecurityConfig(UserService userService) {
+    public WebSecurityConfiguration(UserService userService) {
         this.userService = userService;
     }
 

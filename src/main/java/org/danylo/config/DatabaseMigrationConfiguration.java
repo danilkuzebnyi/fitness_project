@@ -1,16 +1,16 @@
-package org.danylo.db;
+package org.danylo.config;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 
-@Component
-public class DatabaseMigration {
+@Component("databaseMigration")
+public class DatabaseMigrationConfiguration {
     private final DataSource dataSource;
 
     @Autowired
-    public DatabaseMigration(DataSource dataSource) {
+    public DatabaseMigrationConfiguration(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
