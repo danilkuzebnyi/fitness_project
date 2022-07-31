@@ -1,5 +1,7 @@
 package org.danylo.controller;
 
+import org.danylo.logging.ChromeLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -9,6 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class CustomErrorController implements ErrorController {
+    private final ChromeLog chromeLog;
+
+    @Autowired
+    public CustomErrorController(ChromeLog chromeLog) {
+        this.chromeLog = chromeLog;
+    }
 
     @GetMapping("/error")
     public String handleError(HttpServletRequest request) {
@@ -17,6 +25,9 @@ public class CustomErrorController implements ErrorController {
 
         if (status != null) {
             int statusCode = Integer.parseInt(status.toString());
+            chromeLog.setUp();
+            chromeLog.printLogs();
+            chromeLog.tearDown();
 
             if (statusCode == HttpStatus.NOT_FOUND.value()) {
                 returnedPage = "error/404";

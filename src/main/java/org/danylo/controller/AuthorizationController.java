@@ -1,7 +1,6 @@
 package org.danylo.controller;
 
 import org.danylo.model.User;
-import org.danylo.repository.UserRepository;
 import org.danylo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
