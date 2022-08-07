@@ -1,9 +1,13 @@
 package org.danylo.service;
 
+import io.sentry.Sentry;
+import io.sentry.spring.tracing.SentrySpan;
+import io.sentry.spring.tracing.SentryTransaction;
 import org.danylo.logging.Log;
 import org.danylo.model.User;
 import org.danylo.repository.UserRepository;
 import org.danylo.security.UserSecurity;
+import org.danylo.sentry.SentryInstrumentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 @Service
+@SentryTransaction(operation = "task")
+@SentrySpan
 public class UserService implements UserDetailsService {
     UserRepository userRepository;
 
@@ -37,19 +43,28 @@ public class UserService implements UserDetailsService {
     }
 
     public String save(User user, BindingResult bindingResult) {
+        boolean isPasswordExisted = (boolean) SentryInstrumentation.createTransactionBoundToTheCurrentScope
+                (() -> isPasswordExist(user), UserService.class, "isPasswordExist");
+        boolean isUsernameExisted = (boolean) SentryInstrumentation.createTransactionBoundToTheCurrentScope
+                (() -> isUsernameExist(user), UserService.class, "isUsernameExist");
         String returnedPage = "redirect:/login";
-        if (isUsernameExist(user)) {
+        String userExistMessage = "User " + user.getUsername() + " exists";
+        if (isUsernameExisted) {
             bindingResult.rejectValue("username", "user.username","An account already exists for this email");
-            Log.logger.info("User " + user.getUsername() + " exists");
+            Log.logger.info(userExistMessage);
+            Sentry.captureMessage(userExistMessage);
         }
-        if (isPasswordExist(user)) {
+        if (isPasswordExisted) {
             bindingResult.rejectValue("password", "user.password","An account already exists for this password");
-            Log.logger.info("User " + user.getUsername() + " exists");
+            Log.logger.info(userExistMessage);
+            Sentry.captureMessage(userExistMessage);
         }
-        if (bindingResult.hasFieldErrors() || isUsernameExist(user) || isPasswordExist(user)) {
+        if (bindingResult.hasFieldErrors() || isUsernameExisted || isPasswordExisted) {
             returnedPage = "authorization/signup";
         } else {
-            Log.logger.info("Saving user with name: " + user.getUsername());
+            String saveUserMessage = "Saving user with name: " + user.getUsername();
+            Log.logger.info(saveUserMessage);
+            Sentry.captureMessage(saveUserMessage);
             userRepository.saveUser(user);
         }
         return returnedPage;
@@ -59,8 +74,8 @@ public class UserService implements UserDetailsService {
         return userRepository.findUsersByUsername(user.getUsername()).size() > 0;
     }
 
-    private boolean isPasswordExist(User userToSave) {
-        return userRepository.findAll().stream()
-                .anyMatch(dbUser -> new BCryptPasswordEncoder().matches(userToSave.getPassword(), dbUser.getPassword()));
+    public boolean isPasswordExist(User userToSave) {
+        return userRepository.findAll().stream().anyMatch(dbUser -> new BCryptPasswordEncoder()
+                            .matches(userToSave.getPassword(), dbUser.getPassword()));
     }
 }

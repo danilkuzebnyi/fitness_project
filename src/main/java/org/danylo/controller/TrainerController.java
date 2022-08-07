@@ -1,11 +1,13 @@
 package org.danylo.controller;
 
+import io.sentry.Sentry;
 import org.danylo.model.Rating;
 import org.danylo.model.Specialization;
 import org.danylo.model.Trainer;
 import org.danylo.model.WorkingTime;
 import org.danylo.repository.SpecializationRepository;
 import org.danylo.repository.TrainerRepository;
+import org.danylo.repository.UserRepository;
 import org.danylo.repository.WorkingTimeRepository;
 import org.danylo.service.SpecializationService;
 import org.danylo.service.TrainerService;
@@ -31,6 +33,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/trainers")
 public class TrainerController {
+    UserRepository userRepository;
     UserService userService;
     TrainerRepository trainerRepository;
     TrainerService trainerService;
@@ -40,13 +43,15 @@ public class TrainerController {
     WorkingTimeService workingTimeService;
 
     @Autowired
-    public TrainerController(UserService userService,
+    public TrainerController(UserRepository userRepository,
+                             UserService userService,
                              TrainerRepository trainerRepository,
                              TrainerService trainerService,
                              SpecializationRepository specializationRepository,
                              SpecializationService specializationService,
                              WorkingTimeRepository workingTimeRepository,
                              WorkingTimeService workingTimeService) {
+        this.userRepository = userRepository;
         this.userService = userService;
         this.trainerRepository = trainerRepository;
         this.trainerService = trainerService;
@@ -139,6 +144,8 @@ public class TrainerController {
     @PostMapping("/{id:[\\d]+}/success")
     public ModelAndView bookWorkout(@PathVariable Integer id) {
         trainerRepository.bookClientWithTrainer(userService.getCurrentUser().getId(), id);
+        Sentry.captureMessage(userService.getCurrentUser().getFullName() + " booked a workout with trainer: " +
+                userRepository.getUserByTrainer(trainerRepository.getById(id)).getFullName());
 
         return new ModelAndView("trainer/success");
     }

@@ -22,7 +22,7 @@ spring:
     activate:
       on-profile: test
   datasource:
-    url: jdbc:postgresql://localhost:5432/course-project-test
+    url: jdbc:p6spy:postgresql://localhost:5432/course-project-test
     username: postgres
     password: postgres
 ---
