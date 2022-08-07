@@ -1,5 +1,6 @@
 package org.danylo.service;
 
+import org.danylo.model.Sorting;
 import org.danylo.model.Trainer;
 import org.danylo.model.User;
 import org.danylo.repository.TrainerRepository;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,6 +66,36 @@ public class TrainerService {
                 .sorted((Trainer trainer1, Trainer trainer2) ->
                         Double.compare(trainer2.getRating().getValue(), trainer1.getRating().getValue()))
                 .collect(Collectors.toList());
+    }
+
+    public List<Trainer> getSortedTrainers(String sorting, List<Trainer> trainers) {
+        switch (Sorting.fromValue(sorting)) {
+            case EXPERIENCE:
+                trainers = sortByExperience(trainers);
+                break;
+            case SMALL_PRICE:
+                trainers = sortByIncreasingPrice(trainers);
+                break;
+            case BIG_PRICE:
+                trainers = sortByDecreasingPrice(trainers);
+                break;
+            case RATING:
+                trainers = sortByRating(trainers);
+                break;
+            default:
+                break;
+        }
+        return trainers;
+    }
+
+    public List<Trainer> getFilteredTrainers(String specialization) {
+        List<Trainer> trainers;
+        if (specialization.equals("all")) {
+            trainers = trainerRepository.showAll();
+        } else {
+            trainers = trainerRepository.showTrainersBySpecialization(specialization);
+        }
+        return trainers;
     }
 
     public boolean isUserTrainedWithTrainer (User user, int trainerId) {

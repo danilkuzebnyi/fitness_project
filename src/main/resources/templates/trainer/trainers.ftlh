@@ -21,12 +21,12 @@
                 </a>
             </p>
             <p class="badge bg-info text-wrap" style="width: 120px">
-                <a class="btn" href="/trainers?specialization=${specialization}&sorting=smallPrice">
+                <a class="btn" href="/trainers?specialization=${specialization}&sorting=small_price">
                     <i class="fa-solid fa-angles-up"></i> price
                 </a>
             </p>
             <p class="badge bg-info text-wrap" style="width: 120px">
-                <a class="btn" href="/trainers?specialization=${specialization}&sorting=bigPrice">
+                <a class="btn" href="/trainers?specialization=${specialization}&sorting=big_price">
                     <i class="fa-solid fa-angles-down"></i> price
                 </a>
             </p>

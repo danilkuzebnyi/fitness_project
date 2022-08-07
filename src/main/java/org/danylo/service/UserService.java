@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -42,11 +41,7 @@ public class UserService implements UserDetailsService {
             bindingResult.rejectValue("username", "user.username","An account already exists for this email");
             Log.logger.info("User " + user.getUsername() + " exists");
         }
-        if (isPasswordExist(user)) {
-            bindingResult.rejectValue("password", "user.password","An account already exists for this password");
-            Log.logger.info("User " + user.getUsername() + " exists");
-        }
-        if (bindingResult.hasFieldErrors() || isUsernameExist(user) || isPasswordExist(user)) {
+        if (bindingResult.hasFieldErrors() || isUsernameExist(user)) {
             returnedPage = "authorization/signup";
         } else {
             Log.logger.info("Saving user with name: " + user.getUsername());
@@ -57,10 +52,5 @@ public class UserService implements UserDetailsService {
 
     private boolean isUsernameExist(User user) {
         return userRepository.findUsersByUsername(user.getUsername()).size() > 0;
-    }
-
-    private boolean isPasswordExist(User userToSave) {
-        return userRepository.findAll().stream()
-                .anyMatch(dbUser -> new BCryptPasswordEncoder().matches(userToSave.getPassword(), dbUser.getPassword()));
     }
 }

@@ -60,26 +60,10 @@ public class TrainerController {
     public ModelAndView showAllTrainers(@RequestParam(defaultValue = "all") String specialization,
                                         @RequestParam(defaultValue = "") String sorting) {
         List<Specialization> specializations = specializationRepository.showAllSpecializations();
+
         List<Trainer> trainers;
-        if (specialization.equals("all")) {
-            trainers = trainerRepository.showAll();
-        } else {
-            trainers = trainerRepository.showTrainersBySpecialization(specialization);
-        }
-        switch (sorting) {
-            case "experience":
-                trainers = trainerService.sortByExperience(trainers);
-                break;
-            case "smallPrice":
-                trainers = trainerService.sortByIncreasingPrice(trainers);
-                break;
-            case "bigPrice":
-                trainers = trainerService.sortByDecreasingPrice(trainers);
-                break;
-            case "rating":
-                trainers = trainerService.sortByRating(trainers);
-                break;
-        }
+        trainers = trainerService.getFilteredTrainers(specialization);
+        trainers = trainerService.getSortedTrainers(sorting, trainers);
 
         trainerService.setTrainerData(trainers);
 
