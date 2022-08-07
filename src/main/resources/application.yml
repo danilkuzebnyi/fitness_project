@@ -10,9 +10,9 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/course-project
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:p6spy:postgresql://localhost:5432/course-project}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 ---
 
 server:
@@ -22,9 +22,9 @@ spring:
     activate:
       on-profile: test
   datasource:
-    url: jdbc:p6spy:postgresql://localhost:5432/course-project-test
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:p6spy:postgresql://localhost:5432/course-project-test}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 ---
 
 server:
