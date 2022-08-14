@@ -17,8 +17,9 @@ public class User {
     @Size(min = 4, message = "Password must be at least 4 characters")
     private String password;
 
-    @Pattern(regexp = "^\\(?03[9]\\)?\\d{7}|^\\(?05[0]\\)?\\d{7}|^\\(?06[3678]\\)?\\d{7}|^\\(?07[3]\\)?\\d{7}|^\\(?09[1-9]\\)?\\d{7}",
-             message = "Please enter a valid telephone number")
+    private Country country;
+
+    @Pattern(regexp = "\\d+", message = "Please enter a valid telephone number")
     private String telephoneNumber;
 
     private Role role = Role.USER;
@@ -67,6 +68,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
     public String getTelephoneNumber() {

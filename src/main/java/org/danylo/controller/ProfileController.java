@@ -1,5 +1,6 @@
 package org.danylo.controller;
 
+import org.danylo.model.Country;
 import org.danylo.model.FitnessClub;
 import org.danylo.model.Role;
 import org.danylo.model.Trainer;
@@ -9,6 +10,7 @@ import org.danylo.repository.FitnessClubRepository;
 import org.danylo.repository.TrainerRepository;
 import org.danylo.repository.UserRepository;
 import org.danylo.repository.WorkingTimeRepository;
+import org.danylo.service.CountryService;
 import org.danylo.service.ExportFileService;
 import org.danylo.service.FitnessClubService;
 import org.danylo.service.TrainerService;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.time.DayOfWeek;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +42,7 @@ public class ProfileController {
     UserRepository userRepository;
     TrainerRepository trainerRepository;
     TrainerService trainerService;
+    CountryService countryService;
     WorkingTimeRepository workingTimeRepository;
     WorkingTimeService workingTimeService;
     FitnessClubRepository fitnessClubRepository;
@@ -49,6 +54,7 @@ public class ProfileController {
                              UserRepository userRepository,
                              TrainerRepository trainerRepository,
                              TrainerService trainerService,
+                             CountryService countryService,
                              WorkingTimeRepository workingTimeRepository,
                              WorkingTimeService workingTimeService,
                              FitnessClubRepository fitnessClubRepository,
@@ -58,6 +64,7 @@ public class ProfileController {
         this.userRepository = userRepository;
         this.trainerRepository = trainerRepository;
         this.trainerService = trainerService;
+        this.countryService = countryService;
         this.workingTimeRepository = workingTimeRepository;
         this.workingTimeService = workingTimeService;
         this.fitnessClubRepository = fitnessClubRepository;
@@ -94,7 +101,9 @@ public class ProfileController {
     @PreAuthorize("hasAuthority('editTrainer')")
     @GetMapping({"/trainer/{id}/edit", "/trainer/edit"})
     public ModelAndView showProfileEditPage(@RequestParam(defaultValue = "MONDAY") DayOfWeek dayOfWeek,
-                                            @PathVariable(required = false) Integer id) {
+                                            @RequestParam(required = false) Integer countryId,
+                                            @PathVariable(required = false) Integer id,
+                                            HttpSession httpSession) {
         User currentUser = userService.getCurrentUser();
         Trainer trainer = new Trainer();
         if (currentUser.getRole() == Role.TRAINER) {
@@ -104,26 +113,27 @@ public class ProfileController {
             trainer = trainerRepository.getById(id);
             currentUser = userRepository.getUserByTrainer(trainer);
         }
+        userService.setUserDataInProfile(currentUser, countryId, httpSession);
         trainerService.setTrainerData(Collections.singletonList(trainer));
-
-        List<DayOfWeek> dayOfWeeks = Arrays.asList(DayOfWeek.values());
-        WorkingTime workingTimeOfTrainerByDayOfWeek = workingTimeRepository.getWorkingTimeOfTrainerByDayOfWeek(trainer, dayOfWeek);
+        workingTimeService.setWorkingTimeInTrainerProfile(trainer, dayOfWeek, httpSession);
 
         return new ModelAndView("trainer/editProfile")
-                .addObject("currentUser", currentUser)
-                .addObject("trainer", trainer)
-                .addObject("selectedDayOfWeek", dayOfWeek)
-                .addObject("dayOfWeeks", dayOfWeeks)
-                .addObject("workingTimeOfTrainerByDayOfWeek", workingTimeOfTrainerByDayOfWeek);
+                .addObject("trainer", trainer);
     }
 
     @PreAuthorize("hasAuthority('editTrainer')")
     @PostMapping({"/trainer/{id}/edit", "/trainer/edit"})
     public String editProfilePage(@PathVariable(required = false) Integer id,
-                                  @ModelAttribute("trainer") Trainer trainer,
+                                  @ModelAttribute("trainer") @Valid Trainer trainer,
+                                  BindingResult bindingResult,
                                   @ModelAttribute("dayOfWeek") DayOfWeek dayOfWeek,
                                   @ModelAttribute("hoursFrom") String hoursFrom,
-                                  @ModelAttribute("hoursTo") String hoursTo) {
+                                  @ModelAttribute("hoursTo") String hoursTo,
+                                  HttpSession httpSession) {
+        if (bindingResult.hasFieldErrors()) {
+            System.out.println("ERRORS!!!");
+            return "trainer/editProfile";
+        }
         User currentUser = userService.getCurrentUser();
         Trainer currentTrainer = new Trainer();
         if (currentUser.getRole() == Role.TRAINER) {
@@ -134,33 +144,56 @@ public class ProfileController {
             currentUser = userRepository.getUserByTrainer(trainer);
             currentTrainer = trainerRepository.getById(id);
         }
+        System.out.println("trainer: " + trainer.getId());
+        System.out.println("currentUser: " + currentUser.getId());
+        System.out.println("currentTrainer: " + currentTrainer.getId());
         int userId = currentUser.getId();
         trainer.setId(userId);
-        trainerRepository.updateUser(trainer);
+        trainer.setCountry((Country) httpSession.getAttribute("selectedCountry"));
+        if (trainer.getPassword() == null) {
+            trainerRepository.updateUserWithoutPassword(trainer);
+        } else {
+            trainerRepository.updateUser(trainer);
+        }
         int trainerId = currentTrainer.getId();
         trainer.setId(trainerId);
         trainerRepository.updateTrainer(trainer);
 
         WorkingTime workingTime = workingTimeService.buildWorkingTimeObject(trainer, dayOfWeek, hoursFrom, hoursTo);
-        workingTimeRepository.save(workingTime);
+        if (workingTime.getHoursFrom() != null && workingTime.getHoursTo() != null) {
+            workingTimeRepository.save(workingTime);
+        }
 
         return "redirect:/profile";
     }
 
     @PreAuthorize("hasAuthority('editUser')")
     @GetMapping("/user/edit")
-    public ModelAndView showProfileEditPage(@ModelAttribute("user") User user) {
+    public ModelAndView showProfileEditPage(@ModelAttribute("user") User user,
+                                            @RequestParam(required = false) Integer countryId,
+                                            HttpSession httpSession) {
         User currentUser = userService.getCurrentUser();
+        userService.setUserDataInProfile(currentUser, countryId, httpSession);
 
-        return new ModelAndView("client/editProfile")
-                .addObject("currentUser", currentUser);
+        return new ModelAndView("client/editProfile");
     }
 
     @PreAuthorize("hasAuthority('editUser')")
     @PostMapping(value = "/user/edit")
-    public String editProfilePage(@ModelAttribute("user") User user) {
-        user.setId(userService.getCurrentUser().getId());
-        userRepository.updateUser(user);
+    public String editProfilePage(@ModelAttribute("user") @Valid User user,
+                                  BindingResult bindingResult,
+                                  HttpSession httpSession) {
+        if (bindingResult.hasFieldErrors()) {
+            return "client/editProfile";
+        }
+        User currentUser = (User) httpSession.getAttribute("currentUser");
+        user.setId(currentUser.getId());
+        user.setCountry((Country) httpSession.getAttribute("selectedCountry"));
+        if (user.getPassword() == null) {
+            userRepository.updateUserWithoutPassword(user);
+        } else {
+            userRepository.updateUser(user);
+        }
 
         return "redirect:/profile";
     }
