@@ -37,6 +37,7 @@ public class TrainerService {
             User user = userRepository.getUserByTrainer(trainer);
             trainer.setFirstName(user.getFirstName());
             trainer.setLastName(user.getLastName());
+            trainer.setCountry(user.getCountry());
             trainer.setTelephoneNumber(user.getTelephoneNumber());
             trainer.setUsername(user.getUsername());
             trainer.setPassword(user.getPassword());

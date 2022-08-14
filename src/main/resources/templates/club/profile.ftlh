@@ -7,6 +7,7 @@
             <p> <span class="text-primary text-uppercase">First name: </span>${currentUser.firstName}</p>
             <p> <span class="text-primary text-uppercase">Last name: </span>${currentUser.lastName}</p>
             <p> <span class="text-primary text-uppercase">Username: </span>${currentUser.username}</p>
+            <p> <span class="text-primary text-uppercase">Country: </span>${currentUser.country}</p>
             <p> <span class="text-primary text-uppercase">Phone: </span>${currentUser.telephoneNumber}</p>
             <a class="btn btn-outline-light mt-3">
                 <form action="/profile/user/edit" method="get">
