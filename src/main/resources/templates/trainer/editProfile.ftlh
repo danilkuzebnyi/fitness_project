@@ -15,7 +15,7 @@
         <div class="input-group mb-3">
             <#include '../country.ftlh'>
             <span class="input-group-text" id="code">${Session.code!}</span>
-            <input type="text"  name="telephoneNumber" id="telephoneNumber" value="${currentUser.telephoneNumber!}" class="form-control" placeholder="Phone" aria-label="Phone" />
+            <input type="text"  name="telephoneNumber" id="telephoneNumber" value="${trainer.telephoneNumber!}" class="form-control" placeholder="Phone" aria-label="Phone" />
         </div>
         <div class="container">
             <div class="row justify-content-md-end">
@@ -63,7 +63,9 @@
             <#else>
                 <input class="btn btn-outline-info btn-lg" type="time" name="hoursTo" id="hoursTo"/>
             </#if>
+            <i id="delete-button" class="fs-3 ms-2 fa-solid fa-circle-minus"></i>
             <br>
+            <p class="text-danger">${workingTimeMissing!}</p>
             <button class="btn btn-outline-success btn-lg mt-3" type="submit">Change data</button>
         </div>
     </form>

@@ -27,7 +27,7 @@ public class WorkingTimeService {
 
     public WorkingTime buildWorkingTimeObject(Trainer trainer, DayOfWeek dayOfWeek, String hoursFrom, String hoursTo) {
         WorkingTime workingTime = new WorkingTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         try {
             workingTime.setHoursFrom(new Time(sdf.parse(hoursFrom).getTime()));
             workingTime.setHoursTo(new Time(sdf.parse(hoursTo).getTime()));
@@ -61,4 +61,7 @@ public class WorkingTimeService {
         httpSession.setAttribute("workingTimeOfTrainerByDayOfWeek", workingTimeOfTrainerByDayOfWeek);
     }
 
+    public boolean isTrainerWorkAtThisDay(WorkingTime workingTime) {
+        return workingTimeRepository.getWorkingTimeOfTrainerByDayOfWeek(workingTime).getHoursFrom() != null;
+    }
 }

@@ -113,8 +113,8 @@ public class ProfileController {
             trainer = trainerRepository.getById(id);
             currentUser = userRepository.getUserByTrainer(trainer);
         }
-        userService.setUserDataInProfile(currentUser, countryId, httpSession);
         trainerService.setTrainerData(Collections.singletonList(trainer));
+        userService.setUserDataInProfile(trainer, countryId, httpSession);
         workingTimeService.setWorkingTimeInTrainerProfile(trainer, dayOfWeek, httpSession);
 
         return new ModelAndView("trainer/editProfile")
@@ -129,9 +129,9 @@ public class ProfileController {
                                   @ModelAttribute("dayOfWeek") DayOfWeek dayOfWeek,
                                   @ModelAttribute("hoursFrom") String hoursFrom,
                                   @ModelAttribute("hoursTo") String hoursTo,
+                                  Model model,
                                   HttpSession httpSession) {
         if (bindingResult.hasFieldErrors()) {
-            System.out.println("ERRORS!!!");
             return "trainer/editProfile";
         }
         User currentUser = userService.getCurrentUser();
@@ -144,9 +144,6 @@ public class ProfileController {
             currentUser = userRepository.getUserByTrainer(trainer);
             currentTrainer = trainerRepository.getById(id);
         }
-        System.out.println("trainer: " + trainer.getId());
-        System.out.println("currentUser: " + currentUser.getId());
-        System.out.println("currentTrainer: " + currentTrainer.getId());
         int userId = currentUser.getId();
         trainer.setId(userId);
         trainer.setCountry((Country) httpSession.getAttribute("selectedCountry"));
@@ -162,6 +159,13 @@ public class ProfileController {
         WorkingTime workingTime = workingTimeService.buildWorkingTimeObject(trainer, dayOfWeek, hoursFrom, hoursTo);
         if (workingTime.getHoursFrom() != null && workingTime.getHoursTo() != null) {
             workingTimeRepository.save(workingTime);
+        } else if (workingTimeService.isTrainerWorkAtThisDay(workingTime) &&
+                workingTime.getHoursFrom() == null && workingTime.getHoursTo() == null) {
+            workingTimeRepository.deleteWorkingHoursOfTrainerByDayOfWeek(id, dayOfWeek);
+        } else if ((workingTime.getHoursFrom() == null && workingTime.getHoursTo() != null) ||
+                (workingTime.getHoursFrom() != null && workingTime.getHoursTo() == null)) {
+            model.addAttribute("workingTimeMissing", "You should specify both hours from and hours to");
+            return "trainer/editProfile";
         }
 
         return "redirect:/profile";

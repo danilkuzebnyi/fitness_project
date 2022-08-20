@@ -16,16 +16,3 @@ $(function getCodeByCountry() {
         })
     })
 });
-
-$(function getCountry() {
-    let select = $('#select-country');
-    select.change(function () {
-        let countryId = select.val();
-        $.ajax({
-            url: window.location.href,
-            type: "GET",
-            dataType: 'string',
-            data: {countryId}
-        })
-    })
-});

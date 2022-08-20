@@ -8,8 +8,18 @@ $(function getWorkingHours() {
             dataType: 'html',
             data: {dayOfWeek},
             success: function(data) {
-                $('body').html(data);
+                let hoursFrom = $(data).find('#hoursFrom').val();
+                let hoursTo = $(data).find('#hoursTo').val();
+                $('#hoursFrom').val(hoursFrom);
+                $('#hoursTo').val(hoursTo);
             }
-        });
+        })
+    })
+});
+
+$(function deleteWorkingHours() {
+    $('#delete-button').click(function () {
+        $('#hoursFrom').val("");
+        $('#hoursTo').val("");
     })
 })

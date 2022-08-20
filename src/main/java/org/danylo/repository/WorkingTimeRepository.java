@@ -83,4 +83,14 @@ public class WorkingTimeRepository extends TrainerRepository {
 
         return namedParameterJdbcTemplate.query(sql, namedParameters, new WorkingTimeRowMapper());
     }
+
+    public void deleteWorkingHoursOfTrainerByDayOfWeek(int trainerId, DayOfWeek dayOfWeek) {
+        String sql = "DELETE FROM trainer_working_hours WHERE trainer_id=:trainerId AND day_id=:dayId";
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("trainerId", trainerId)
+                .addValue("dayId", dayOfWeek.getValue());
+
+        namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
+    }
 }
