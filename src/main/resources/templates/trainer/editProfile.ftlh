@@ -7,10 +7,10 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
         <div class="input-group mb-3">
-            <input type="text" name="firstName" id="firstName" value="${trainer.firstName!}" class="form-control" placeholder="First name" aria-label="First name" required autofocus/>
+            <input type="text" name="firstName" id="firstName" value="${trainer.firstName!}" class="form-control" placeholder="First name" aria-label="First name" required />
         </div>
         <div class="input-group mb-3">
-            <input type="text"  name="lastName" id="lastName" value="${trainer.lastName!}" class="form-control" placeholder="Last Name" aria-label="Last name "/>
+            <input type="text"  name="lastName" id="lastName" value="${trainer.lastName!}" class="form-control" placeholder="Last Name" aria-label="Last name" required />
         </div>
         <div class="input-group mb-3">
             <#include '../country.ftlh'>
@@ -65,7 +65,10 @@
             </#if>
             <i id="delete-button" class="fs-3 ms-2 fa-solid fa-circle-minus"></i>
             <br>
-            <p class="text-danger">${workingTimeMissing!}</p>
+            <#if message??>
+                <#include '../popup.ftlh'>
+            </#if>
+<#--            <p class="text-danger">${workingTimeMissing!}</p>-->
             <button class="btn btn-outline-success btn-lg mt-3" type="submit">Change data</button>
         </div>
     </form>
@@ -74,3 +77,4 @@
 <script src="/static/js/country.js"></script>
 <script src="/static/js/profileWorkingHours.js"></script>
 <script src="/static/js/changePassword.js"></script>
+<script src="/static/js/popup.js"></script>

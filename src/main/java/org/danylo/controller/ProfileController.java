@@ -111,7 +111,6 @@ public class ProfileController {
         } else if (currentUser.getRole() == Role.CLUB
                 && fitnessClubService.hasAccessToTrainer(fitnessClubRepository.getClubByUser(currentUser), trainerRepository.getById(id))) {
             trainer = trainerRepository.getById(id);
-            currentUser = userRepository.getUserByTrainer(trainer);
         }
         trainerService.setTrainerData(Collections.singletonList(trainer));
         userService.setUserDataInProfile(trainer, countryId, httpSession);
@@ -157,18 +156,12 @@ public class ProfileController {
         trainerRepository.updateTrainer(trainer);
 
         WorkingTime workingTime = workingTimeService.buildWorkingTimeObject(trainer, dayOfWeek, hoursFrom, hoursTo);
-        if (workingTime.getHoursFrom() != null && workingTime.getHoursTo() != null) {
-            workingTimeRepository.save(workingTime);
-        } else if (workingTimeService.isTrainerWorkAtThisDay(workingTime) &&
-                workingTime.getHoursFrom() == null && workingTime.getHoursTo() == null) {
-            workingTimeRepository.deleteWorkingHoursOfTrainerByDayOfWeek(id, dayOfWeek);
-        } else if ((workingTime.getHoursFrom() == null && workingTime.getHoursTo() != null) ||
-                (workingTime.getHoursFrom() != null && workingTime.getHoursTo() == null)) {
-            model.addAttribute("workingTimeMissing", "You should specify both hours from and hours to");
-            return "trainer/editProfile";
+        boolean isAnyWorkingTimeErrors = workingTimeService.validateTime(workingTime, model);
+        if (!isAnyWorkingTimeErrors) {
+            workingTimeService.changeWorkingTimeOfTrainer(workingTime, id, dayOfWeek);
         }
 
-        return "redirect:/profile";
+        return isAnyWorkingTimeErrors ? "trainer/editProfile" : "redirect:/profile";
     }
 
     @PreAuthorize("hasAuthority('editUser')")
