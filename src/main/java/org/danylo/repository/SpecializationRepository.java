@@ -1,5 +1,6 @@
 package org.danylo.repository;
 
+import org.danylo.mapper.SpecializationRowMapper;
 import org.danylo.model.Specialization;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;

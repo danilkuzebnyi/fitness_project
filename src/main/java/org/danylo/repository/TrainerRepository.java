@@ -1,5 +1,7 @@
 package org.danylo.repository;
 
+import org.danylo.mapper.TrainerRatingRowMapper;
+import org.danylo.mapper.TrainerRowMapper;
 import org.danylo.model.Trainer;
 import org.danylo.model.User;
 import org.springframework.dao.EmptyResultDataAccessException;

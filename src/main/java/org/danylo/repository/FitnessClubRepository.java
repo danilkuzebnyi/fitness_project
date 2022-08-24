@@ -1,5 +1,7 @@
 package org.danylo.repository;
 
+import org.danylo.mapper.FitnessClubRowMapper;
+import org.danylo.mapper.TrainerRowMapper;
 import org.danylo.model.FitnessClub;
 import org.danylo.model.Trainer;
 import org.danylo.model.User;

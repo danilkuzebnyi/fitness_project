@@ -1,4 +1,4 @@
-package org.danylo.repository;
+package org.danylo.mapper;
 
 import org.danylo.model.FitnessClub;
 import org.springframework.jdbc.core.RowMapper;

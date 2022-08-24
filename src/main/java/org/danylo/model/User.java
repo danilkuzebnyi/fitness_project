@@ -24,7 +24,9 @@ public class User {
 
     private Role role = Role.USER;
 
-    private Status status = Status.ACTIVE;
+    private Status status = Status.NOT_ACTIVE;
+
+    private String activationCode;
 
     public int getId() {
         return id;
@@ -100,5 +102,13 @@ public class User {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 }

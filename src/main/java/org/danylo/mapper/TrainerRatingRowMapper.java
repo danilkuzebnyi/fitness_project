@@ -1,4 +1,4 @@
-package org.danylo.repository;
+package org.danylo.mapper;
 
 import org.danylo.model.Rating;
 import org.danylo.model.Trainer;
@@ -14,7 +14,9 @@ public class TrainerRatingRowMapper extends TrainerRowMapper implements RowMappe
         rating.setTrainer(trainer);
         rating.setValue(rs.getFloat("rating"));
         rating.setCount(rs.getInt("count"));
-        trainer.setRating(rating);
+        if (trainer != null) {
+            trainer.setRating(rating);
+        }
 
         return trainer;
     }

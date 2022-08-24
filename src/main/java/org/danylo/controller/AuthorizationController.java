@@ -51,4 +51,10 @@ public class AuthorizationController {
                              HttpSession httpSession) {
         return userService.save(user, bindingResult, httpSession);
     }
+
+    @GetMapping("/activation/{code}")
+    public String getActivationCode(@PathVariable String code) {
+        userService.activateByCode(code);
+        return "redirect:/login";
+    }
 }

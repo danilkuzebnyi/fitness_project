@@ -1,5 +1,7 @@
 package org.danylo.repository;
 
+import org.danylo.mapper.UserRowMapper;
+import org.danylo.mapper.UserWithCountryRowMapper;
 import org.danylo.model.Country;
 import org.danylo.model.Trainer;
 import org.danylo.model.User;
@@ -15,8 +17,9 @@ import java.util.List;
 @Repository
 public class UserRepository extends BaseRepository {
     public void saveUser(User user) {
-        String sql = "INSERT INTO users (first_name, last_name, username, password, phone, role, country_id) " +
-                "VALUES(:firstName, :lastName, :username, :password, :phone, :role, :countryId)";
+        String sql = "INSERT INTO users (first_name, last_name, username, password, phone, role, country_id, " +
+                "activation_code, status) " +
+                "VALUES(:firstName, :lastName, :username, :password, :phone, :role, :countryId, :activationCode, :status)";
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         Country userCountry = user.getCountry();
         SqlParameterSource namedParameters = new MapSqlParameterSource().
@@ -26,7 +29,9 @@ public class UserRepository extends BaseRepository {
                 addValue("password", user.getPassword()).
                 addValue("phone", userCountry.getCode() + user.getTelephoneNumber()).
                 addValue("role", user.getRole().toString()).
-                addValue("countryId", userCountry.getId());
+                addValue("countryId", userCountry.getId()).
+                addValue("activationCode", user.getActivationCode()).
+                addValue("status", user.getStatus().toString());
 
         namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
     }
@@ -63,10 +68,19 @@ public class UserRepository extends BaseRepository {
         namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
     }
 
+    public void updateUserStatus(User user) {
+        String sql = "UPDATE users SET status=:status WHERE id=:id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource().
+                addValue("status", user.getStatus().toString()).
+                addValue("id", user.getId());
+
+        namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
+    }
+
     public List<User> findAll() {
         try {
             String sql = "SELECT * FROM users JOIN country c on c.id = users.country_id";
-            return namedParameterJdbcTemplate.query(sql, new UserRowMapper());
+            return namedParameterJdbcTemplate.query(sql, new UserWithCountryRowMapper());
         } catch (EmptyResultDataAccessException e) {
             throw new UsernameNotFoundException("No users in database");
         }
@@ -76,7 +90,7 @@ public class UserRepository extends BaseRepository {
         try {
             String sql = "SELECT * FROM users JOIN country c on c.id = users.country_id WHERE username=:username";
             SqlParameterSource namedParameters = new MapSqlParameterSource("username", username);
-            return namedParameterJdbcTemplate.queryForObject(sql, namedParameters, new UserRowMapper());
+            return namedParameterJdbcTemplate.queryForObject(sql, namedParameters, new UserWithCountryRowMapper());
         } catch (EmptyResultDataAccessException e) {
             throw new UsernameNotFoundException(username);
         }
@@ -85,7 +99,17 @@ public class UserRepository extends BaseRepository {
     public List<User> findUsersByUsername(String username) {
         String sql = "SELECT * FROM users JOIN country c on c.id = users.country_id WHERE username=:username";
         SqlParameterSource namedParameters = new MapSqlParameterSource("username", username);
-        return namedParameterJdbcTemplate.query(sql, namedParameters, new UserRowMapper());
+        return namedParameterJdbcTemplate.query(sql, namedParameters, new UserWithCountryRowMapper());
+    }
+
+    public User findByActivationCode(String activationCode) {
+        try {
+            String sql = "SELECT * FROM users WHERE activation_code=:activationCode";
+            SqlParameterSource namedParameters = new MapSqlParameterSource("activationCode", activationCode);
+            return namedParameterJdbcTemplate.queryForObject(sql, namedParameters, new UserRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new UsernameNotFoundException("No such user");
+        }
     }
 
     public User getUserByTrainer(Trainer trainer) {
@@ -93,7 +117,7 @@ public class UserRepository extends BaseRepository {
             String sql = "SELECT * FROM users JOIN trainer t on users.id = t.user_id" +
                     " JOIN country c on c.id = users.country_id WHERE t.id=:id";
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", trainer.getId());
-            return namedParameterJdbcTemplate.queryForObject(sql, namedParameters, new UserRowMapper());
+            return namedParameterJdbcTemplate.queryForObject(sql, namedParameters, new UserWithCountryRowMapper());
         } catch (EmptyResultDataAccessException e) {
             throw new UsernameNotFoundException("No such user");
         }

@@ -2,6 +2,7 @@ package org.danylo.service;
 
 import org.danylo.logging.Log;
 import org.danylo.model.Country;
+import org.danylo.model.Status;
 import org.danylo.model.User;
 import org.danylo.repository.UserRepository;
 import org.danylo.security.UserSecurity;
@@ -13,16 +14,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
-    UserRepository userRepository;
-    CountryService countryService;
+    private final UserRepository userRepository;
+    private final CountryService countryService;
+    private final MailSender mailSender;
 
     @Autowired
-    public UserService(UserRepository userRepository, CountryService countryService) {
+    public UserService(UserRepository userRepository,
+                       CountryService countryService,
+                       MailSender mailSender) {
         this.userRepository = userRepository;
         this.countryService = countryService;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -51,7 +57,9 @@ public class UserService implements UserDetailsService {
         } else {
             Log.logger.info("Saving user with name: " + user.getUsername());
             user.setCountry((Country) httpSession.getAttribute("selectedCountry"));
+            user.setActivationCode(UUID.randomUUID().toString());
             userRepository.saveUser(user);
+            sendMessageToEmail(user);
         }
         return returnedPage;
     }
@@ -66,6 +74,21 @@ public class UserService implements UserDetailsService {
         httpSession.setAttribute("currentUser", currentUser);
         httpSession.setAttribute("countries", countries);
         httpSession.setAttribute("code", code);
+    }
+
+    public void activateByCode(String code) {
+        User user = userRepository.findByActivationCode(code);
+        if (user != null) {
+            user.setStatus(Status.ACTIVE);
+            userRepository.updateUserStatus(user);
+        }
+    }
+
+    private void sendMessageToEmail(User user) {
+        String message = String.format("Hello, %s! \n" +
+                        "Click here to activate your account http://localhost:8081/activation/%s",
+                user.getFirstName(), user.getActivationCode());
+        mailSender.send(user.getUsername(), "D-Fitness", message);
     }
 
     private boolean isUsernameExist(User user) {

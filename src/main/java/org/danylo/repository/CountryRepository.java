@@ -1,7 +1,7 @@
 package org.danylo.repository;
 
+import org.danylo.mapper.CountryRowMapper;
 import org.danylo.model.Country;
-import org.danylo.model.User;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;

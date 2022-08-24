@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 
 @Component("databaseMigration")
-public class DatabaseMigrationConfiguration {
+public class FlywayConfiguration {
     private final DataSource dataSource;
 
     @Autowired
-    public DatabaseMigrationConfiguration(DataSource dataSource) {
+    public FlywayConfiguration(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

@@ -1,5 +1,6 @@
 package org.danylo.repository;
 
+import org.danylo.mapper.WorkingTimeRowMapper;
 import org.danylo.model.Trainer;
 import org.danylo.model.WorkingTime;
 import org.slf4j.Logger;
