@@ -7,6 +7,7 @@ import org.danylo.model.User;
 import org.danylo.repository.UserRepository;
 import org.danylo.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
@@ -21,6 +22,9 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final CountryService countryService;
     private final MailSender mailSender;
+
+    @Value("${app.url}")
+    private String url;
 
     @Autowired
     public UserService(UserRepository userRepository,
@@ -86,8 +90,8 @@ public class UserService implements UserDetailsService {
 
     private void sendMessageToEmail(User user) {
         String message = String.format("Hello, %s! \n" +
-                        "Click here to activate your account http://localhost:8081/activation/%s",
-                user.getFirstName(), user.getActivationCode());
+                        "Click here to activate your account %s/activation/%s",
+                 user.getFirstName(), url, user.getActivationCode());
         mailSender.send(user.getUsername(), "D-Fitness", message);
     }
 

@@ -13,6 +13,10 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/course-project}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+mail:
+  debug: true
+app:
+  url: http://localhost:8080
 ---
 
 server:
@@ -25,6 +29,10 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/course-project-test}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+mail:
+  debug: true
+app:
+  url: http://localhost:8081
 ---
 
 server:
@@ -33,3 +41,11 @@ spring:
   config:
     activate:
       on-profile: prod
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+mail:
+  debug: false
+app:
+  url: https://d-fitness.herokuapp.com
