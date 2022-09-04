@@ -1,5 +1,4 @@
 <#include '../structure.ftlh'>
-<#include '../header.ftlh'>
 <#import "/spring.ftl" as spring />
 
 <div class="container mt-4 ms-4">
@@ -41,6 +40,7 @@
         </form>
     </fieldset>
 </div>
-<script src="/static/js/jquery-3.6.0.js"></script>
+
+<#include '../popupImports.ftlh'>
 <script src="/static/js/country.js"></script>
 <script src="/static/js/changePassword.js"></script>

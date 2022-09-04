@@ -1,5 +1,4 @@
 <#include '../structure.ftlh'>
-<#include '../header.ftlh'>
 
 <div class="container-fluid">
     <p> <span class="text-primary text-uppercase">First name: </span>${currentUser.firstName}</p>
@@ -19,3 +18,5 @@
         <input class="btn btn-danger" type="submit" value="Log-out"/>
     </form>
 </a>
+
+<#include '../popupImports.ftlh'>

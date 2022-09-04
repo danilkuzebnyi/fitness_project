@@ -6,10 +6,6 @@ $(function defineMethodsToClosePopup() {
         closePopup(popup);
     })
 
-    $('.popup-outer').click(function () {
-        closePopup(popup);
-    })
-
     $(document).keydown(function (e) {
         if (e.keyCode === escapeKeyCode) {
             closePopup(popup);
@@ -17,6 +13,17 @@ $(function defineMethodsToClosePopup() {
     })
 
     function closePopup(popup) {
-        popup.hide();
+        popup.css('visibility', 'hidden');
+        if (popup.is($('#error-popup'))) {
+            $('#popup-message').text("");
+        }
     }
+})
+
+$(function showSupportPopup() {
+    let popup = $('#support-popup');
+    let supportButton = $('#support-button');
+    supportButton.click(function () {
+        popup.css('visibility', 'visible');
+    })
 })

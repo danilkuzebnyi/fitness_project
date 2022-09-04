@@ -1,7 +1,7 @@
 <#include '../structure.ftlh'>
 <meta name="_csrf" content="${_csrf.token}"/>
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
-<#include '../header.ftlh'>
+
 <div class="container mt-3">
     <div class="row">
         <div class="col-3 offset-1">
@@ -52,3 +52,5 @@
         </div>
     </div>
 </div>
+
+<#include '../popupImports.ftlh'>

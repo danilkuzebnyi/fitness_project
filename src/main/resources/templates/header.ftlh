@@ -9,6 +9,7 @@
                 <a class="btn btn-outline-light me-2" href="/login">Log-in</a>
                 <a class="btn btn-warning" href="/signup">Sign-up</a>
                 <a class="btn btn-outline-light me-2" href="/profile">Profile</a>
+                <a id="support-button" class="btn btn-success">Support</a>
             </div>
         </div>
     </div>
