@@ -1,4 +1,4 @@
-<select class="form-select" id="select-country">
+<select class="form-select ${(countryError??)?string('is-invalid', '')}" id="select-country">
     <option id="select-header" selected disabled>Choose your country</option>
     <#if countries??>
         <#list Session.countries as country>

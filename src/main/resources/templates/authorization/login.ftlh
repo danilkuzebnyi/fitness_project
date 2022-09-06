@@ -3,6 +3,11 @@
 
 <form action="/login" method="post" class="col-4 p-4 p-md-5 border rounded bg-light">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    <#if Session?? && Session.SPRING_SECURITY_LAST_EXCEPTION??>
+        <div class="alert alert-danger mb-3">
+            Wrong login or password
+        </div>
+    </#if>
     <div class="form-floating mb-3">
         <input type="email" class="form-control" name="username" id="username" placeholder="Username" required autofocus/>
         <label for="username">Username</label>

@@ -6,6 +6,7 @@ import org.danylo.service.CountryService;
 import org.danylo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,8 +49,9 @@ public class AuthorizationController {
     @PostMapping("/signup")
     public String registerIn(@ModelAttribute("user") @Valid User user,
                              BindingResult bindingResult,
+                             Model model,
                              HttpSession httpSession) {
-        return userService.save(user, bindingResult, httpSession);
+        return userService.save(user, bindingResult, model, httpSession);
     }
 
     @GetMapping("/activation/{code}")

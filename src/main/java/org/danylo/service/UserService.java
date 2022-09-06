@@ -1,5 +1,6 @@
 package org.danylo.service;
 
+import org.danylo.controller.ControllerUtils;
 import org.danylo.logging.Log;
 import org.danylo.model.Country;
 import org.danylo.model.Status;
@@ -12,9 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -50,13 +53,19 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public String save(User user, BindingResult bindingResult, HttpSession httpSession) {
+    public String save(User user, BindingResult bindingResult, Model model, HttpSession httpSession) {
         String returnedPage = "redirect:/login";
-        if (isUsernameExist(user)) {
-            bindingResult.rejectValue("username", "user.username","An account already exists for this email");
-            Log.logger.info("User " + user.getUsername() + " exists");
+        Country selectedCountry = (Country) httpSession.getAttribute("selectedCountry");
+        if (selectedCountry == null) {
+            rejectUserCountryValue(bindingResult);
         }
-        if (bindingResult.hasFieldErrors() || isUsernameExist(user)) {
+        boolean usernameExist = isUsernameExist(user);
+        if (usernameExist) {
+            rejectUsernameValue(bindingResult);
+        }
+        if (bindingResult.hasFieldErrors() || usernameExist || selectedCountry == null) {
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errors);
             returnedPage = "authorization/signup";
         } else {
             Log.logger.info("Saving user with name: " + user.getUsername());
@@ -66,6 +75,18 @@ public class UserService implements UserDetailsService {
             sendMessageToEmail(user);
         }
         return returnedPage;
+    }
+
+    public void rejectUsernameValue(BindingResult bindingResult) {
+        bindingResult.rejectValue("username", "user.username","An account already exists for this email");
+    }
+
+    public boolean isUsernameExist(User user) {
+        return userRepository.findUsersByUsername(user.getUsername()).size() > 0;
+    }
+
+    private void rejectUserCountryValue(BindingResult bindingResult) {
+        bindingResult.rejectValue("country", "user.country","Please select your country");
     }
 
     public void setUserDataInProfile(User currentUser, Integer countryId, HttpSession httpSession) {
@@ -93,9 +114,5 @@ public class UserService implements UserDetailsService {
                         "Click here to activate your account %s/activation/%s",
                  user.getFirstName(), url, user.getActivationCode());
         mailSender.send(user.getUsername(), "D-Fitness", message);
-    }
-
-    private boolean isUsernameExist(User user) {
-        return userRepository.findUsersByUsername(user.getUsername()).size() > 0;
     }
 }

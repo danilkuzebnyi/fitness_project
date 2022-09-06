@@ -34,6 +34,7 @@ import javax.validation.Valid;
 import java.time.DayOfWeek;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("profile")
@@ -130,9 +131,6 @@ public class ProfileController {
                                   @ModelAttribute("hoursTo") String hoursTo,
                                   Model model,
                                   HttpSession httpSession) {
-        if (bindingResult.hasFieldErrors()) {
-            return "trainer/editProfile";
-        }
         User currentUser = userService.getCurrentUser();
         Trainer currentTrainer = new Trainer();
         if (currentUser.getRole() == Role.TRAINER) {
@@ -143,6 +141,18 @@ public class ProfileController {
             currentUser = userRepository.getUserByTrainer(trainer);
             currentTrainer = trainerRepository.getById(id);
         }
+
+        boolean userChangeUsernameToExistingUsername = userService.isUsernameExist(trainer)
+                && !currentUser.getUsername().equals(trainer.getUsername());
+        if (userChangeUsernameToExistingUsername) {
+            userService.rejectUsernameValue(bindingResult);
+        }
+        if (bindingResult.hasFieldErrors() || userChangeUsernameToExistingUsername) {
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errors);
+            return "trainer/editProfile";
+        }
+
         int userId = currentUser.getId();
         trainer.setId(userId);
         trainer.setCountry((Country) httpSession.getAttribute("selectedCountry"));
@@ -172,18 +182,27 @@ public class ProfileController {
         User currentUser = userService.getCurrentUser();
         userService.setUserDataInProfile(currentUser, countryId, httpSession);
 
-        return new ModelAndView("client/editProfile");
+        return new ModelAndView("client/editProfile")
+                .addObject("user", currentUser);
     }
 
     @PreAuthorize("hasAuthority('editUser')")
     @PostMapping(value = "/user/edit")
     public String editProfilePage(@ModelAttribute("user") @Valid User user,
                                   BindingResult bindingResult,
+                                  Model model,
                                   HttpSession httpSession) {
-        if (bindingResult.hasFieldErrors()) {
+        User currentUser = (User) httpSession.getAttribute("currentUser");
+        boolean userChangeUsernameToExistingUsername = userService.isUsernameExist(user)
+                && !currentUser.getUsername().equals(user.getUsername());
+        if (userChangeUsernameToExistingUsername) {
+            userService.rejectUsernameValue(bindingResult);
+        }
+        if (bindingResult.hasFieldErrors() || userChangeUsernameToExistingUsername) {
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errors);
             return "client/editProfile";
         }
-        User currentUser = (User) httpSession.getAttribute("currentUser");
         user.setId(currentUser.getId());
         user.setCountry((Country) httpSession.getAttribute("selectedCountry"));
         if (user.getPassword() == null) {
