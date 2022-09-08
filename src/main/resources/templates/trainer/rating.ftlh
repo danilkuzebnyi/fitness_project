@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/static/css/rating.css">
+
 <div id="rating-div">
     <form class="form" action="/trainers/${id}" method="post">
         <div class="rating">
@@ -19,5 +20,6 @@
         <div class="reviews text-center">( <span class="rating-count">${rating.count}</span> reviews )</div>
     </div>
 </div>
-<script src="/static/js/jquery-3.6.0.js"></script>
+
+<#include '../popupImports.ftlh'>
 <script src="/static/js/rating.js"></script>

@@ -1,5 +1,4 @@
 <#include '../structure.ftlh'>
-<#include '../header.ftlh'>
 
 <div class="container">
     <div class="row justify-content-center">
@@ -38,3 +37,5 @@
         </div>
     </div>
 </div>
+
+<#include '../popupImports.ftlh'>

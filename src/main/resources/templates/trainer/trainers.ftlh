@@ -1,5 +1,4 @@
 <#include '../structure.ftlh'>
-<#include '../header.ftlh'>
 
 <h1 class="text-center">Trainers</h1>
 <div class="container">
@@ -65,3 +64,5 @@
         </div>
     </div>
 </div>
+
+<#include '../popupImports.ftlh'>

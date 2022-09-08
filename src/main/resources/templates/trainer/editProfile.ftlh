@@ -1,5 +1,4 @@
 <#include '../structure.ftlh'>
-<#include '../header.ftlh'>
 <#import "/spring.ftl" as spring />
 
 <div class="container ms-3 mt-3">
@@ -69,15 +68,12 @@
             </#if>
             <i id="delete-button" class="fs-3 ms-2 fa-solid fa-circle-minus"></i>
             <br>
-            <#if message??>
-                <#include '../popup.ftlh'>
-            </#if>
             <button class="btn btn-outline-success btn-lg mt-3" type="submit">Change data</button>
         </div>
     </form>
 </div>
-<script src="/static/js/jquery-3.6.0.js"></script>
+
+<#include '../popupImports.ftlh'>
 <script src="/static/js/country.js"></script>
 <script src="/static/js/profileWorkingHours.js"></script>
 <script src="/static/js/changePassword.js"></script>
-<script src="/static/js/popup.js"></script>
