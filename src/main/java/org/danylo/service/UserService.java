@@ -53,28 +53,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public String save(User user, BindingResult bindingResult, Model model, HttpSession httpSession) {
-        String returnedPage = "redirect:/login";
-        Country selectedCountry = (Country) httpSession.getAttribute("selectedCountry");
-        if (selectedCountry == null) {
-            rejectUserCountryValue(bindingResult);
-        }
-        boolean usernameExist = isUsernameExist(user);
-        if (usernameExist) {
-            rejectUsernameValue(bindingResult);
-        }
-        if (bindingResult.hasFieldErrors() || usernameExist || selectedCountry == null) {
-            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
-            model.mergeAttributes(errors);
-            returnedPage = "authorization/signup";
-        } else {
-            Log.logger.info("Saving user with name: " + user.getUsername());
-            user.setCountry((Country) httpSession.getAttribute("selectedCountry"));
-            user.setActivationCode(UUID.randomUUID().toString());
-            userRepository.saveUser(user);
-            sendMessageToEmail(user);
-        }
-        return returnedPage;
+    public void save(User user, HttpSession httpSession) {
+        Log.logger.info("Saving user with name: " + user.getUsername());
+        user.setCountry((Country) httpSession.getAttribute("selectedCountry"));
+        user.setActivationCode(UUID.randomUUID().toString());
+        userRepository.saveUser(user);
+        sendMessageToEmail(user);
     }
 
     public void rejectUsernameValue(BindingResult bindingResult) {
@@ -85,19 +69,21 @@ public class UserService implements UserDetailsService {
         return userRepository.findUsersByUsername(user.getUsername()).size() > 0;
     }
 
-    private void rejectUserCountryValue(BindingResult bindingResult) {
+    public void rejectUserCountryValue(BindingResult bindingResult) {
         bindingResult.rejectValue("country", "user.country","Please select your country");
     }
 
     public void setUserDataInProfile(User currentUser, Integer countryId, HttpSession httpSession) {
-        List<Country> countries = countryService.getAll();
         Country selectedCountry = countryId == null ? currentUser.getCountry() : countryService.getById(countryId);
         String code = selectedCountry == null ? "" : selectedCountry.getCode();
         currentUser.setTelephoneNumber(currentUser.getTelephoneNumber().substring(code.length()));
 
+        if (httpSession.getAttribute("countries") == null) {
+            List<Country> countries = countryService.getAll();
+            httpSession.setAttribute("countries", countries);
+        }
         httpSession.setAttribute("selectedCountry", selectedCountry);
         httpSession.setAttribute("currentUser", currentUser);
-        httpSession.setAttribute("countries", countries);
         httpSession.setAttribute("code", code);
     }
 

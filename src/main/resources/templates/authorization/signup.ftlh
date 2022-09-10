@@ -4,7 +4,7 @@
 <div class="container mt-4 ms-4">
     <fieldset>
         <h2 class="text-info">Sign up</h2>
-        <form action="/signup" method="post">
+        <form action="/signup" method="post" id="registration-form">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
             <div class="input-group mb-3 mt-4">
@@ -43,10 +43,19 @@
                 <input type="password" value="${user.password!}" name="password" id="password" class="form-control ${(passwordError??)?string('is-invalid', '')}" placeholder="Password" aria-label="Password"/>
                 <@spring.showErrors separator=", " classOrStyle="text-danger ms-4" />
             </div> <br>
-            <button class="btn btn-outline-success btn-lg" id="submit-button" style="width: 40%;" type="submit">Sign up</button>
+            <button class="g-recaptcha btn btn-outline-success btn-lg"
+                    data-sitekey="6LdrquMhAAAAAGLK9T_yFDHeG3goYKEmhVUavLIC"
+                    data-callback='onSubmit'
+                    data-action='register' id="submit-button" style="width: 40%;" type="submit">Sign up</button>
         </form>
     </fieldset>
 </div>
 
 <#include '../popupImports.ftlh'>
 <script src="/static/js/country.js"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6LdrquMhAAAAAGLK9T_yFDHeG3goYKEmhVUavLIC"></script>
+<script type="text/javascript">
+    function onSubmit() {
+        $("#registration-form").submit();
+    }
+</script>
