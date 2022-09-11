@@ -43,6 +43,11 @@
                 <input type="password" value="${user.password!}" name="password" id="password" class="form-control ${(passwordError??)?string('is-invalid', '')}" placeholder="Password" aria-label="Password"/>
                 <@spring.showErrors separator=", " classOrStyle="text-danger ms-4" />
             </div> <br>
+            <#if recaptchaError??>
+                <input type="password" name="confirmationPassword" id="confirmationPassword"
+                       class="form-control ${(confirmationPasswordError??)?string('is-invalid', '')}" placeholder="Confirmation Password" />
+                <br>
+            </#if>
             <button class="g-recaptcha btn btn-outline-success btn-lg"
                     data-sitekey="6LdrquMhAAAAAGLK9T_yFDHeG3goYKEmhVUavLIC"
                     data-callback='onSubmit'
@@ -53,7 +58,7 @@
 
 <#include '../popupImports.ftlh'>
 <script src="/static/js/country.js"></script>
-<script src="https://www.google.com/recaptcha/api.js?render=6LdrquMhAAAAAGLK9T_yFDHeG3goYKEmhVUavLIC"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=${Session.recaptchaSiteKey}"></script>
 <script type="text/javascript">
     function onSubmit() {
         $("#registration-form").submit();

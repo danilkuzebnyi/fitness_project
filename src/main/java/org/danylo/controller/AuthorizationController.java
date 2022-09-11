@@ -1,6 +1,5 @@
 package org.danylo.controller;
 
-import org.danylo.dto.RecaptchaResponseDto;
 import org.danylo.logging.Log;
 import org.danylo.model.Country;
 import org.danylo.model.User;
@@ -15,22 +14,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class AuthorizationController {
     private final UserService userService;
     private final CountryService countryService;
     private final RecaptchaService recaptchaService;
+    private final HttpSession httpSession;
+    private String sentConfirmationPassword = "";
 
     @Autowired
     public AuthorizationController(UserService userService,
                                    CountryService countryService,
-                                   RecaptchaService recaptchaService) {
+                                   RecaptchaService recaptchaService,
+                                   HttpSession httpSession) {
         this.userService = userService;
         this.countryService = countryService;
         this.recaptchaService = recaptchaService;
+        this.httpSession = httpSession;
     }
 
     @GetMapping("/login")
@@ -40,17 +43,19 @@ public class AuthorizationController {
 
     @GetMapping("/signup")
     public ModelAndView getRegisterInForm(@ModelAttribute("user") User user,
-                                          @RequestParam(required = false) Integer countryId,
-                                          HttpSession httpSession) {
-        List<Country> countries = countryService.getAll();
+                                          @RequestParam(required = false) Integer countryId) {
+        Log.logger.info("id: " + httpSession.getId());
+        Log.logger.info("creation time: " + httpSession.getCreationTime());
+        httpSession.getAttributeNames().asIterator().forEachRemaining(Log.logger::info);
+        Log.logger.info("is new: " + httpSession.isNew());
         Country country = null;
         if (countryId != null) {
             country = countryService.getById(countryId);
         }
-        String code = country == null ? "" : country.getCode();
-        httpSession.setAttribute("countries", countries);
-        httpSession.setAttribute("selectedCountry", country);
-        httpSession.setAttribute("code", code);
+        countryService.setCountryFieldsToHttpSession(country, httpSession);
+        httpSession.setAttribute("recaptchaSiteKey", recaptchaService.getSiteKey());
+        httpSession.removeAttribute("isConfirmationMessageSent");
+
         return new ModelAndView("authorization/signup");
     }
 
@@ -58,10 +63,7 @@ public class AuthorizationController {
     public String registerIn(@ModelAttribute("user") @Valid User user,
                              @RequestParam("g-recaptcha-response") String recaptchaResponse,
                              BindingResult bindingResult,
-                             Model model,
-                             HttpSession httpSession) {
-        String returnedPage = "redirect:/login";
-
+                             Model model) {
         Country selectedCountry = (Country) httpSession.getAttribute("selectedCountry");
         if (selectedCountry == null) {
             userService.rejectUserCountryValue(bindingResult);
@@ -74,16 +76,26 @@ public class AuthorizationController {
 
         boolean recaptchaSuccess = recaptchaService.validateResponse(recaptchaResponse);
         if (!recaptchaSuccess) {
-
+            model.addAttribute("recaptchaError", "");
+            if (httpSession.getAttribute("isConfirmationMessageSent") == null) {
+                sentConfirmationPassword = UUID.randomUUID().toString().substring(0, 12);
+                userService.sendConfirmationMessageToEmail(user, sentConfirmationPassword);
+                httpSession.setAttribute("isConfirmationMessageSent", true);
+            }
+            if (user.getConfirmationPassword() == null || !user.getConfirmationPassword().equals(sentConfirmationPassword)) {
+                model.addAttribute("confirmationPasswordError", "");
+                return "authorization/signup";
+            }
         }
+
         if (bindingResult.hasFieldErrors() || usernameExist || selectedCountry == null) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
-            returnedPage = "authorization/signup";
-        } else {
-            userService.save(user, httpSession);
+            return "authorization/signup";
         }
-        return returnedPage;
+
+        userService.save(user);
+        return "redirect:/login";
     }
 
     @GetMapping("/activation/{code}")

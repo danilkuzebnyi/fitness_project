@@ -1,6 +1,5 @@
 package org.danylo.service;
 
-import org.danylo.controller.ControllerUtils;
 import org.danylo.logging.Log;
 import org.danylo.model.Country;
 import org.danylo.model.Status;
@@ -13,11 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -25,6 +21,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final CountryService countryService;
     private final MailSender mailSender;
+    private final HttpSession httpSession;
 
     @Value("${app.url}")
     private String url;
@@ -32,10 +29,12 @@ public class UserService implements UserDetailsService {
     @Autowired
     public UserService(UserRepository userRepository,
                        CountryService countryService,
-                       MailSender mailSender) {
+                       MailSender mailSender,
+                       HttpSession httpSession) {
         this.userRepository = userRepository;
         this.countryService = countryService;
         this.mailSender = mailSender;
+        this.httpSession = httpSession;
     }
 
     @Override
@@ -53,12 +52,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public void save(User user, HttpSession httpSession) {
+    public void save(User user) {
         Log.logger.info("Saving user with name: " + user.getUsername());
         user.setCountry((Country) httpSession.getAttribute("selectedCountry"));
         user.setActivationCode(UUID.randomUUID().toString());
         userRepository.saveUser(user);
-        sendMessageToEmail(user);
+        sendActivationMessageToEmail(user);
     }
 
     public void rejectUsernameValue(BindingResult bindingResult) {
@@ -75,16 +74,17 @@ public class UserService implements UserDetailsService {
 
     public void setUserDataInProfile(User currentUser, Integer countryId, HttpSession httpSession) {
         Country selectedCountry = countryId == null ? currentUser.getCountry() : countryService.getById(countryId);
+        countryService.setCountryFieldsToHttpSession(selectedCountry, httpSession);
         String code = selectedCountry == null ? "" : selectedCountry.getCode();
         currentUser.setTelephoneNumber(currentUser.getTelephoneNumber().substring(code.length()));
-
-        if (httpSession.getAttribute("countries") == null) {
-            List<Country> countries = countryService.getAll();
-            httpSession.setAttribute("countries", countries);
-        }
-        httpSession.setAttribute("selectedCountry", selectedCountry);
         httpSession.setAttribute("currentUser", currentUser);
-        httpSession.setAttribute("code", code);
+    }
+
+    public void sendConfirmationMessageToEmail(User user, String confirmationPassword) {
+        String message = String.format("Hello, %s! \n" +
+                        "This your one-time password: %s",
+                user.getFirstName(), confirmationPassword);
+        mailSender.send(user.getUsername(), "D-Fitness", message);
     }
 
     public void activateByCode(String code) {
@@ -95,7 +95,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    private void sendMessageToEmail(User user) {
+    private void sendActivationMessageToEmail(User user) {
         String message = String.format("Hello, %s! \n" +
                         "Click here to activate your account %s/activation/%s",
                  user.getFirstName(), url, user.getActivationCode());

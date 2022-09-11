@@ -4,7 +4,6 @@ import org.danylo.dto.RecaptchaResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -25,6 +24,10 @@ public class RecaptchaService {
     @Autowired
     public RecaptchaService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    public String getSiteKey() {
+        return siteKey;
     }
 
     public boolean validateResponse(String recaptchaResponse) {
