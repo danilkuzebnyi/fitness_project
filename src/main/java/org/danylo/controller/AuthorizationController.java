@@ -1,6 +1,5 @@
 package org.danylo.controller;
 
-import org.danylo.logging.Log;
 import org.danylo.model.Country;
 import org.danylo.model.User;
 import org.danylo.service.CountryService;
@@ -44,10 +43,6 @@ public class AuthorizationController {
     @GetMapping("/signup")
     public ModelAndView getRegisterInForm(@ModelAttribute("user") User user,
                                           @RequestParam(required = false) Integer countryId) {
-        Log.logger.info("id: " + httpSession.getId());
-        Log.logger.info("creation time: " + httpSession.getCreationTime());
-        httpSession.getAttributeNames().asIterator().forEachRemaining(Log.logger::info);
-        Log.logger.info("is new: " + httpSession.isNew());
         Country country = null;
         if (countryId != null) {
             country = countryService.getById(countryId);
