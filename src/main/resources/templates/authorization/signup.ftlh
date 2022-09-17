@@ -44,6 +44,7 @@
                 <@spring.showErrors separator=", " classOrStyle="text-danger ms-4" />
             </div> <br>
             <#if recaptchaError??>
+                <p class="text-info">Confirmation password was sent to the email you indicated above</p>
                 <input type="password" name="confirmationPassword" id="confirmationPassword"
                        class="form-control ${(confirmationPasswordError??)?string('is-invalid', '')}" placeholder="Confirmation Password" />
                 <br>
