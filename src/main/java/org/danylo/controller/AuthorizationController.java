@@ -5,6 +5,8 @@ import org.danylo.model.User;
 import org.danylo.service.CountryService;
 import org.danylo.service.RecaptchaService;
 import org.danylo.service.UserService;
+import org.danylo.web.Dialog;
+import org.danylo.web.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +38,11 @@ public class AuthorizationController {
     }
 
     @GetMapping("/login")
-    public String getLogInForm(@ModelAttribute("user") User user) {
+    public String getLogInForm(@ModelAttribute("user") User user, Model model) {
+        if (httpSession.getAttribute("activationLink") != null) {
+            Dialog.create(model, Message.CHECK_EMAIL);
+            httpSession.removeAttribute("activationLink");
+        }
         return "authorization/login";
     }
 
@@ -90,6 +96,7 @@ public class AuthorizationController {
         }
 
         userService.save(user);
+        httpSession.setAttribute("activationLink", "");
         return "redirect:/login";
     }
 

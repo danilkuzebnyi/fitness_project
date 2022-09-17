@@ -8,7 +8,7 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
             <div class="input-group mb-3 mt-4">
-                <input type="text" value="${user.firstName!}" name="firstName" id="firstName" class="form-control" placeholder="First name" aria-label="First name" required autofocus />
+                <input type="text" value="${user.firstName!}" name="firstName" id="firstName" class="form-control" placeholder="First name" aria-label="First name" required />
             </div>
             <div class="input-group mb-3">
                 <input type="text" value="${user.lastName!}" name="lastName" id="lastName" class="form-control" placeholder="Last Name" aria-label="Last name" required />
