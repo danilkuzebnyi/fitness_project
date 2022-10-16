@@ -59,7 +59,7 @@
 
 <#include '../popupImports.ftlh'>
 <script src="/static/js/country.js"></script>
-<script src="https://www.google.com/recaptcha/api.js?render=${Session.recaptchaSiteKey}"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=${Session.recaptchaSiteKey!}"></script>
 <script type="text/javascript">
     function onSubmit() {
         $("#registration-form").submit();
