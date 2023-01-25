@@ -1,20 +1,17 @@
 package org.danylo.repository;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 class UserRepositoryTest {
-    private static UserRepository userRepository;
-
-    @BeforeEach
-    void init() {
-        userRepository = new UserRepository();
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void testFindByUsername() {
-        System.out.println(userRepository.findByUsername("yakusheva@gmail.com").getUsername());
         Assertions.assertEquals("yakusheva@gmail.com", userRepository.findByUsername("yakusheva@gmail.com").getUsername());
     }
 }

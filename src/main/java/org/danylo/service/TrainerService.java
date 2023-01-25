@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +63,7 @@ public class TrainerService {
 
     public List<Trainer> sortByRating(List<Trainer> trainers) {
         return trainers.stream()
-                .sorted((Trainer trainer1, Trainer trainer2) ->
+                .sorted((trainer1, trainer2) ->
                         Double.compare(trainer2.getRating().getValue(), trainer1.getRating().getValue()))
                 .collect(Collectors.toList());
     }
@@ -99,7 +98,7 @@ public class TrainerService {
         return trainers;
     }
 
-    public boolean isUserTrainedWithTrainer (User user, int trainerId) {
+    public boolean isUserTrainedWithTrainer(User user, int trainerId) {
         return trainerRepository.getUsersWhoTrainedWithTrainer(trainerId).contains(user.getId());
     }
 

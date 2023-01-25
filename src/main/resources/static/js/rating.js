@@ -15,7 +15,8 @@ $(function initRatings() {
     }
 
     setRatingActiveWidth();
-    function setRatingActiveWidth(value = ratingValue.text()) {
+    function setRatingActiveWidth(value) {
+        value = value > 0 ? value : ratingValue.text();
         const ratingActiveWidth = parseToFloat(value) * 20;
         ratingActive.css('width', `${ratingActiveWidth}%`);
     }

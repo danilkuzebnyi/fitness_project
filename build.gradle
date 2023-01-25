@@ -28,6 +28,7 @@ dependencies {
     implementation 'com.twilio.sdk:twilio:8.34.1'
     implementation 'org.springframework.session:spring-session-jdbc:2.7.0'
     implementation 'net.sourceforge.htmlunit:htmlunit:2.65.1'
+    implementation 'com.google.guava:guava:31.1-jre'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

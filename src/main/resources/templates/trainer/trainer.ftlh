@@ -15,6 +15,7 @@
                     <li class="fst-italic fs-5"> ${specialization.name} </li>
                 </#list>
             </ul>
+            <h5 id ="trainer-experience"> Сoaching since ${trainer.experience!} </h5>
             <#if trainer.description??>
                 <p class="fw-light"> ${trainer.description} </p>
             </#if>
@@ -28,13 +29,13 @@
                         <p>Select hours:
                         <form action="/trainers/${id}/success" method="post">
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                            <select class="btn btn-info dropdown-toggle" style="width: 170px;">
+                            <select id="trainer-working-time" class="btn btn-info dropdown-toggle" style="width: 170px;">
                                 <#list workingHours as time>
                                     <option value="${time}">${time}</option>
                                 </#list>
                             </select>
                             </p>
-                            <button class="btn btn-outline-success btn-lg" type="submit">Book a workout</button>
+                            <button id="book-workout" class="btn btn-outline-success btn-lg" type="submit">Book a workout</button>
                         </form>
                     <#elseif date?has_content && !workingHours?has_content>
                         <p class="text-danger">${trainer.firstName} has a day off. Please select another day.</p>

@@ -96,7 +96,7 @@ public class TrainerRepository extends UserRepository {
         return namedParameterJdbcTemplate.queryForObject(sql, namedParameters, Integer.class);
     }
 
-    public List<Integer> getUsersWhoTrainedWithTrainer (int trainerId) {
+    public List<Integer> getUsersWhoTrainedWithTrainer(int trainerId) {
         String sql = "SELECT user_id " +
                 "FROM booking " +
                 "WHERE trainer_id=:id";

@@ -6,7 +6,7 @@
         <div class="col">
             <#list specializations as specialization>
                 <p class="badge bg-primary text-wrap fs-6" style="width: 150px">
-                    <a class="btn" href="/trainers?specialization=${specialization.name}">
+                    <a id="${specialization.name}" class="btn" href="/trainers?specialization=${specialization.name}">
                         ${specialization.name}
                     </a>
                 </p>
@@ -15,22 +15,22 @@
         </div>
         <div class="col">
             <p class="badge bg-info text-wrap" style="width: 120px">
-                <a class="btn" href="/trainers?specialization=${specialization}&sorting=experience">
+                <a id="sortByExperience" class="btn" href="/trainers?specialization=${specialization}&sorting=experience">
                     <i class="fa-solid fa-angles-down"></i> experience
                 </a>
             </p>
             <p class="badge bg-info text-wrap" style="width: 120px">
-                <a class="btn" href="/trainers?specialization=${specialization}&sorting=small_price">
+                <a id="sortByAscPrice" class="btn" href="/trainers?specialization=${specialization}&sorting=small_price">
                     <i class="fa-solid fa-angles-up"></i> price
                 </a>
             </p>
             <p class="badge bg-info text-wrap" style="width: 120px">
-                <a class="btn" href="/trainers?specialization=${specialization}&sorting=big_price">
+                <a id="sortByDescPrice" class="btn" href="/trainers?specialization=${specialization}&sorting=big_price">
                     <i class="fa-solid fa-angles-down"></i> price
                 </a>
             </p>
             <p class="badge bg-info text-wrap" style="width: 120px">
-                <a class="btn" href="/trainers?specialization=${specialization}&sorting=rating">
+                <a id="sortByRating" class="btn" href="/trainers?specialization=${specialization}&sorting=rating">
                     <i class="fa-solid fa-angles-down"></i> rating
                 </a>
             </p>
@@ -44,16 +44,16 @@
                     <div class="col-5">
                         <a class="fw-bolder fs-3" href="/trainers/${trainer.id}"> ${trainer.fullName} </a>
                         <p class="fw-bold fs-5"> Specializations:
-                        <ul>
+                        <ul id="trainerSpecializations">
                             <#list trainer.specializations as specialization>
-                                <li> ${specialization.name} </li>
+                                <li id="trainerSpecialization"> ${specialization.name} </li>
                             </#list>
                         </ul>
                         </p>
                     </div>
                     <div class="col-3">
                         <#if trainer.price??>
-                            <h3 class="text-center mt-3"> ${trainer.price} ₴ </h3>
+                            <h3 id="trainerPrice" class="text-center mt-3"> ${trainer.price} ₴ </h3>
                         <#else>
                             <p></p>
                         </#if>>
