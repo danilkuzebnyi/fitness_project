@@ -71,7 +71,7 @@ public class WorkingTimeRepository extends TrainerRepository {
 
             return namedParameterJdbcTemplate.queryForObject(sql, namedParameters, new WorkingTimeRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            logger.info("get empty result from method getWorkingTimeOfTrainerByDayOfWeek");
+            logger.info("Trainer doesn't work at " + workingTime.getDayOfWeek().toString());
             return new WorkingTime();
         }
     }

@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -68,21 +69,23 @@ public class TrainerRepository extends UserRepository {
     }
 
     @PreAuthorize("hasAuthority('rate')")
-    public void saveRating(int trainerId, int rating) {
-        String sql = "INSERT INTO trainer_rating(trainer_id, rating) VALUES (:trainer_id, :rating)";
+    public void saveRating(int trainerId, int userId, int rating) {
+        String sql = "INSERT INTO trainer_rating(trainer_id, user_id, rating) VALUES (:trainer_id, :user_id, :rating)";
         SqlParameterSource namedParameters = new MapSqlParameterSource().
                 addValue("trainer_id", trainerId).
+                addValue("user_id", userId).
                 addValue("rating", rating);
 
         namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
     }
 
     @PreAuthorize("hasAuthority('book')")
-    public void bookClientWithTrainer(int userId, int trainerId) {
-        String sql = "INSERT INTO booking(user_id, trainer_id) VALUES (:user_id, :trainer_id)";
+    public void bookClientWithTrainer(int userId, int trainerId, LocalDateTime meetingTime) {
+        String sql = "INSERT INTO booking(user_id, trainer_id, meeting_time) VALUES (:user_id, :trainer_id, :meeting_time)";
         SqlParameterSource namedParameters = new MapSqlParameterSource().
                 addValue("user_id", userId).
-                addValue("trainer_id", trainerId);
+                addValue("trainer_id", trainerId).
+                addValue("meeting_time", meetingTime);
 
         namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
     }
@@ -101,6 +104,15 @@ public class TrainerRepository extends UserRepository {
                 "FROM booking " +
                 "WHERE trainer_id=:id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", trainerId);
+
+        return namedParameterJdbcTemplate.queryForList(sql, namedParameters, Integer.class);
+    }
+
+    public List<Integer> getTrainersThatUserRated(int userId) {
+        String sql = "SELECT trainer_id " +
+                "FROM trainer_rating " +
+                "WHERE user_id=:user_id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("user_id", userId);
 
         return namedParameterJdbcTemplate.queryForList(sql, namedParameters, Integer.class);
     }

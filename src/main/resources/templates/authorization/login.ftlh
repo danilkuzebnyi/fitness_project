@@ -1,7 +1,9 @@
 <#include '../structure.ftlh'>
 
 <form action="/login" method="post" class="col-4 p-4 p-md-5 border rounded bg-light">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    <#if _csrf??>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    </#if>
     <#if Session?? && Session.SPRING_SECURITY_LAST_EXCEPTION??>
         <div class="alert alert-danger mb-3">
             Wrong login or password

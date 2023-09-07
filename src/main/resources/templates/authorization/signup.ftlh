@@ -5,7 +5,9 @@
     <fieldset>
         <h2 class="text-info">Sign up</h2>
         <form action="/signup" method="post" id="registration-form">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <#if _csrf??>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </#if>
 
             <div class="input-group mb-3 mt-4">
                 <input type="text" value="${user.firstName!}" name="firstName" id="firstName" class="form-control" placeholder="First name" aria-label="First name" required />
@@ -30,7 +32,7 @@
                     </div>
                 </div>
             </div> <br>
-            <div>
+            <div id="usernameError">
                 <@spring.bind 'user.username'/>
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon1">@</span>

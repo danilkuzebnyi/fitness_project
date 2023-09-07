@@ -1,11 +1,10 @@
 package org.danylo.model;
 
-import org.springframework.stereotype.Component;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
-@Component
-public class User {
+public class User implements Serializable {
     private int id;
 
     private String firstName;

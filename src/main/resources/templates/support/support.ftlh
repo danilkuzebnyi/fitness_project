@@ -3,7 +3,9 @@
         <div class="popup-inner">
             <i class="fa-solid fa-xmark popup-close"></i>
             <form action="/support" method="post">
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <#if _csrf??>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </#if>
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" name="telephoneNumber" id="telephoneNumber" placeholder="Phone.." value="+" required />
                     <label for="telephoneNumber">Phone</label>

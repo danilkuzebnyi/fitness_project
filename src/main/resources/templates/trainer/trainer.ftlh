@@ -29,7 +29,8 @@
                         <p>Select hours:
                         <form action="/trainers/${id}/success" method="post">
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                            <select id="trainer-working-time" class="btn btn-info dropdown-toggle" style="width: 170px;">
+                            <input type="hidden" name="date" value="${date!}"/>
+                            <select id="trainer-working-time" name="selectedTime" class="btn btn-info dropdown-toggle" style="width: 170px;">
                                 <#list workingHours as time>
                                     <option value="${time}">${time}</option>
                                 </#list>

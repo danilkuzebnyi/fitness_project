@@ -9,8 +9,7 @@ import org.assertj.core.util.Streams;
 import org.danylo.model.Specialization;
 import org.danylo.repository.SpecializationRepository;
 import org.danylo.repository.TrainerRepository;
-
-
+import org.danylo.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -32,18 +33,21 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithUserDetails("a@gmail.com")
+@Transactional
 class TrainerControllerTest {
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
     SpecializationRepository specializationRepository;
+
+    @Autowired
+    UserService userService;
 
     @SpyBean
     @Qualifier("trainerRepository")
@@ -202,25 +206,29 @@ class TrainerControllerTest {
     }
 
     @Test
-    void updateTrainerPage_RedirectToSameUrl() throws Exception {
+    @Sql(value = {"/sql/save-rating.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void updateTrainerPage_InternalServerError_IfUserAlreadyRatedTrainer() throws Exception {
         int trainerId = 1;
         int rating = 4;
+        int userId = userService.getCurrentUser().getId();
         mockMvc.perform(post("/trainers/" + trainerId)
                         .param("currentRating", String.valueOf(rating))
                         .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/trainers/" + trainerId));
+                .andExpect(status().isInternalServerError());
+
+        verify(trainerRepository, never()).saveRating(trainerId, userId, rating);
     }
 
     @Test
-    void updateTrainerPage_SaveRating_IfUserTrainedWithTrainer() throws Exception {
-        int trainerId = 1;
+    void updateTrainerPage_SaveRating_IfUserTrainedWithTrainerAndNotRatedTrainerYet() throws Exception {
+        int trainerId = 12;
         int rating = 4;
+        int userId = userService.getCurrentUser().getId();
         mockMvc.perform(post("/trainers/" + trainerId)
                 .param("currentRating", String.valueOf(rating))
                 .with(csrf()));
 
-        verify(trainerRepository).saveRating(trainerId, rating);
+        verify(trainerRepository).saveRating(trainerId, userId, rating);
     }
 
     @Test
@@ -228,22 +236,12 @@ class TrainerControllerTest {
     void updateTrainerPage_NotSaveRating_IfUserNotTrainedWithTrainer() throws Exception {
         int trainerId = 1;
         int rating = 4;
+        int userId = userService.getCurrentUser().getId();
         mockMvc.perform(post("/trainers/" + trainerId)
                 .param("currentRating", String.valueOf(rating))
                 .with(csrf()));
 
-        verify(trainerRepository, never()).saveRating(trainerId, rating);
-    }
-
-    @Test
-    void updateTrainerPage_NotSaveRating_IfUserAlreadyRateThisTrainer() throws Exception {
-        int trainerId = 1;
-        int rating = 4;
-        mockMvc.perform(post("/trainers/" + trainerId)
-                .param("currentRating", String.valueOf(rating))
-                .with(csrf()));
-
-        verify(trainerRepository, never()).saveRating(trainerId, rating);
+        verify(trainerRepository, never()).saveRating(trainerId, userId, rating);
     }
 
     @Test
@@ -261,10 +259,9 @@ class TrainerControllerTest {
 
     @Test
     void bookWorkout_Booked_IfUserHasPermission() throws Exception {
-        int trainerId = 1;
-        mockMvc.perform(get("/trainers/" + trainerId)
-                .param("date", "2023-01-26"));
-        mockMvc.perform(post("/trainers/" + trainerId + "/success")
+        mockMvc.perform(post("/trainers/{id}/success", 1)
+                        .param("date", "2023-01-26")
+                        .param("selectedTime", "12:00")
                         .with(csrf()))
                 .andExpect(status().isOk());
     }
@@ -272,10 +269,9 @@ class TrainerControllerTest {
     @Test
     @WithUserDetails("gorin@gmail.com")
     void bookWorkout_AccessForbidden_IfUserHasNotPermission() throws Exception {
-        int trainerId = 1;
-        mockMvc.perform(get("/trainers/" + trainerId)
-                .param("date", "2023-01-26"));
-        mockMvc.perform(post("/trainers/" + trainerId + "/success")
+        mockMvc.perform(post("/trainers/{id}/success", 1)
+                        .param("date", "2023-01-26")
+                        .param("selectedTime", "12:00")
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }

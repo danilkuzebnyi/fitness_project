@@ -1,9 +1,10 @@
 package org.danylo.model;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.time.DayOfWeek;
 
-public class WorkingTime {
+public class WorkingTime implements Serializable {
     private int id;
     private Trainer trainer;
     private DayOfWeek dayOfWeek;

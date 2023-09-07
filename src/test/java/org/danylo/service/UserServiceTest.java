@@ -4,24 +4,21 @@ import org.danylo.model.User;
 import org.danylo.repository.UserRepository;
 import org.danylo.utils.UserBuilder;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.test.mock.mockito.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Transactional
 class UserServiceTest {
-
     @Autowired
     UserService userService;
 
@@ -33,8 +30,12 @@ class UserServiceTest {
     MailSender mailSenderMock;
 
     @Test
+    @Sql(value = {"/sql/restart-users-id-seq.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void save() {
         User user = UserBuilder.buildNonExistedUser();
+        RequestContextHolder.currentRequestAttributes()
+                .setAttribute("selectedCountry", user.getCountry(), RequestAttributes.SCOPE_SESSION);
+
         userService.save(user);
 
         assertNotNull(user.getActivationCode());
@@ -59,17 +60,14 @@ class UserServiceTest {
     }
 
     @Test
-    @Sql(value = {"/insert-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/insert-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/restart-users-id-seq.sql", "/sql/insert-user.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void activateByCode_UserIsActivated_IfActivationCodeExist() {
         userService.activateByCode("activate");
-
         verify(userRepositorySpy).updateUserStatus(any(User.class));
     }
 
     @Test
-    @Sql(value = {"/insert-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/insert-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/restart-users-id-seq.sql", "/sql/insert-user.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void activateByCode_UserIsNotActivated_IfActivationCodeNotExist() {
         assertThrows(UsernameNotFoundException.class, () -> userService.activateByCode("activate1"));
         verify(userRepositorySpy, never()).updateUserStatus(any(User.class));

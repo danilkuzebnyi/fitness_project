@@ -8,9 +8,11 @@ import java.util.UUID;
 
 public class UserBuilder {
     public static final String EXISTED_USERNAME = "gorin@gmail.com";
-    public static final String EXISTED_PASSWORD= "gorin@gmail.com";
+    public static final String EXISTED_PASSWORD= "gorin";
     public static final String NON_EXISTED_USERNAME = "nouser@gmail.com";
     public static final String NON_EXISTED_PASSWORD= "nouser";
+    public static final String WRONG_PASSWORD = "111";
+    public static final String WRONG_TELEPHONE_NUMBER = "906356d42";
 
     public static User buildExistedUser() {
         User user = buildUser();
@@ -22,6 +24,32 @@ public class UserBuilder {
 
     public static User buildNonExistedUser() {
         User user = buildUser();
+        user.setUsername(NON_EXISTED_USERNAME);
+        user.setPassword(NON_EXISTED_PASSWORD);
+
+        return user;
+    }
+
+    public static User buildNonExistedUserWithWrongPassword() {
+        User user = buildUser();
+        user.setUsername(NON_EXISTED_USERNAME);
+        user.setPassword(WRONG_PASSWORD);
+
+        return user;
+    }
+
+    public static User buildNonExistedUserWithWrongTelephoneNumber() {
+        User user = buildUser();
+        user.setTelephoneNumber(WRONG_TELEPHONE_NUMBER);
+        user.setUsername(NON_EXISTED_USERNAME);
+        user.setPassword(NON_EXISTED_PASSWORD);
+
+        return user;
+    }
+
+    public static User buildNonExistedUserWithoutCountry() {
+        User user = buildUser();
+        user.setCountry(null);
         user.setUsername(NON_EXISTED_USERNAME);
         user.setPassword(NON_EXISTED_PASSWORD);
 

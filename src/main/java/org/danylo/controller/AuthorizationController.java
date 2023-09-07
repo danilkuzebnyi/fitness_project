@@ -62,8 +62,8 @@ public class AuthorizationController {
 
     @PostMapping("/signup")
     public String registerIn(@ModelAttribute("user") @Valid User user,
-                             @RequestParam("g-recaptcha-response") String recaptchaResponse,
                              BindingResult bindingResult,
+                             @RequestParam("g-recaptcha-response") String recaptchaResponse,
                              Model model) {
         Country selectedCountry = (Country) httpSession.getAttribute("selectedCountry");
         if (selectedCountry == null) {
