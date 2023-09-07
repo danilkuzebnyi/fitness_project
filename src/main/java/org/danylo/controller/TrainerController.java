@@ -12,15 +12,19 @@ import org.danylo.service.TrainerService;
 import org.danylo.service.UserService;
 import org.danylo.service.WorkingTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -59,15 +63,12 @@ public class TrainerController {
     @GetMapping()
     public ModelAndView showAllTrainers(@RequestParam(defaultValue = "all") String specialization,
                                         @RequestParam(defaultValue = "") String sorting) {
-        List<Specialization> specializations = specializationRepository.showAllSpecializations();
-
         List<Trainer> trainers;
         trainers = trainerService.getFilteredTrainers(specialization);
         trainers = trainerService.getSortedTrainers(sorting, trainers);
-
         trainerService.setTrainerData(trainers);
-
         specializationService.setSpecializationsToTrainer(trainers);
+        List<Specialization> specializations = specializationRepository.showAllSpecializations();
 
         return new ModelAndView("trainer/trainers")
                 .addObject("trainers", trainers)
@@ -77,7 +78,7 @@ public class TrainerController {
 
     @GetMapping("/{id:[\\d]+}")
     public ModelAndView showTrainerPage(@PathVariable Integer id,
-                                        @ModelAttribute("date") String date) {
+                                        @RequestParam(required = false) String date) {
         Trainer trainer = trainerRepository.getById(id);
         trainerService.setTrainerData(Collections.singletonList(trainer));
         specializationService.setSpecializationsToTrainer(Collections.singletonList(trainer));
@@ -104,25 +105,31 @@ public class TrainerController {
     }
 
     @PostMapping("/{id:[\\d]+}")
-    public String updateTrainerPage(@PathVariable Integer id,
-                                    @RequestParam Integer currentRating) {
-        if (trainerService.isUserTrainedWithTrainer(userService.getCurrentUser(), id)) {
-            trainerRepository.saveRating(id, currentRating);
+    @ResponseBody
+    public ResponseEntity<String> updateTrainerPage(@PathVariable Integer id,
+                                                    @RequestParam Integer currentRating) {
+        ResponseEntity<String> response;
+        try {
+            trainerService.saveRating(id, currentRating);
+            response = ResponseEntity.ok("Rating has been submitted successfully");
+        } catch (Exception e) {
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
-        return "redirect:/trainers/" + id;
+        return response;
     }
 
     @PreAuthorize("hasAuthority('book')")
     @GetMapping("/{id:[\\d]+}/success")
     public ModelAndView getSuccessPage(@PathVariable Integer id) {
-
         return new ModelAndView("trainer/success");
     }
 
     @PostMapping("/{id:[\\d]+}/success")
-    public ModelAndView bookWorkout(@PathVariable Integer id) {
-        trainerRepository.bookClientWithTrainer(userService.getCurrentUser().getId(), id);
+    public ModelAndView bookWorkout(@PathVariable Integer id,
+                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime selectedTime) {
+        trainerService.bookClientWithTrainer(userService.getCurrentUser().getId(), id, date, selectedTime);
 
         return new ModelAndView("trainer/success");
     }

@@ -5,22 +5,31 @@ import org.danylo.mapper.UserWithCountryRowMapper;
 import org.danylo.model.Country;
 import org.danylo.model.Trainer;
 import org.danylo.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+
 import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
 public class UserRepository extends BaseRepository {
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     public void saveUser(User user) {
         String sql = "INSERT INTO users (first_name, last_name, username, password, phone, role, country_id, " +
                 "activation_code, status) " +
                 "VALUES(:firstName, :lastName, :username, :password, :phone, :role, :countryId, :activationCode, :status)";
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         Country userCountry = user.getCountry();
         SqlParameterSource namedParameters = new MapSqlParameterSource().
                 addValue("firstName", user.getFirstName()).
@@ -39,7 +48,7 @@ public class UserRepository extends BaseRepository {
     public void updateUser(User user) {
         String sql = "UPDATE users SET first_name=:firstName, last_name=:lastName, username=:username, " +
                 "password=:password, phone=:phone, country_id=:countryId WHERE id=:id";
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         Country userCountry = user.getCountry();
         SqlParameterSource namedParameters = new MapSqlParameterSource().
                 addValue("firstName", user.getFirstName()).
@@ -75,15 +84,6 @@ public class UserRepository extends BaseRepository {
                 addValue("id", user.getId());
 
         namedParameterJdbcTemplate.execute(sql, namedParameters, PreparedStatement::execute);
-    }
-
-    public List<User> findAll() {
-        try {
-            String sql = "SELECT * FROM users JOIN country c on c.id = users.country_id";
-            return namedParameterJdbcTemplate.query(sql, new UserWithCountryRowMapper());
-        } catch (EmptyResultDataAccessException e) {
-            throw new UsernameNotFoundException("No users in database");
-        }
     }
 
     public User findByUsername(String username) {

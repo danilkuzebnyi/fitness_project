@@ -33,9 +33,8 @@ public class RecaptchaService {
     public boolean validateResponse(String recaptchaResponse) {
         String url = String.format(RECAPTCHA_URL, secret, recaptchaResponse);
         RecaptchaResponseDto recaptchaResponseDto = restTemplate.getForObject(url, RecaptchaResponseDto.class);
-        boolean recaptchaSuccess = recaptchaResponseDto != null && recaptchaResponseDto.isSuccess()
+        return recaptchaResponseDto != null && recaptchaResponseDto.isSuccess()
                 && recaptchaResponseDto.getAction().equals(REGISTER_ACTION)
                 && recaptchaResponseDto.getScore() > threshold;
-        return recaptchaSuccess;
     }
 }

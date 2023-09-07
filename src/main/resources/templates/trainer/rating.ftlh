@@ -16,8 +16,11 @@
         </div>
     </form>
     <div class="rate-numbers">
-        <div class="rating-value text-center mt-2">${rating.value}</div>
+        <div id="current-rating-value" class="rating-value text-center mt-2">${rating.value}</div>
         <div class="reviews text-center">( <span class="rating-count">${rating.count}</span> reviews )</div>
+    </div>
+    <div class="mt-2">
+        <h6 id="rating-error-message" class="text-danger"></h6>
     </div>
 </div>
 
