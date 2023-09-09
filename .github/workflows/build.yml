@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -15,11 +15,11 @@ jobs:
         with:
           java-version: 11
           distribution: 'temurin'
-
-      - name: Setup Gradle
-          uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-          with:
-            gradle-version: 7.0
-
-      - name: Build with Gradle
-        run: ./gradlew clean build
+#
+#      - name: Setup Gradle
+#          uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+#          with:
+#            gradle-version: 7.0
+#
+#      - name: Build with Gradle
+#        run: ./gradlew clean build
