@@ -20,6 +20,6 @@ jobs:
 #          uses: gradle/setup-gradle@v1
 #          with:
 #            gradle-version: 7.0
-#
-#      - name: Build with Gradle
-#        run: ./gradlew clean build
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
