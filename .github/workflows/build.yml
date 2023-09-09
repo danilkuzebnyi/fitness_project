@@ -1,6 +1,5 @@
 jobs:
   build:
-    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v3
