@@ -193,11 +193,11 @@ class TrainerControllerTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (page1 != null && page2 != null) {
-                float rating1 = Float.parseFloat(page1.getHtmlElementById("current-rating-value").getFirstChild().toString());
-                float rating2 = Float.parseFloat(page2.getHtmlElementById("current-rating-value").getFirstChild().toString());
+            try {
+                float rating1 = Float.parseFloat(Objects.requireNonNull(page1).getHtmlElementById("current-rating-value").getFirstChild().toString());
+                float rating2 = Float.parseFloat(Objects.requireNonNull(page2).getHtmlElementById("current-rating-value").getFirstChild().toString());
                 return Float.compare(rating2, rating1);
-            } else {
+            } catch (NullPointerException e) {
                 return 0;
             }
         }));
