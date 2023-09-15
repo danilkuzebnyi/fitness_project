@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.14'
+    id 'org.springframework.boot' version '2.7.15'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
@@ -43,4 +43,18 @@ task stage {
 
 test {
     useJUnitPlatform()
+
+    afterSuite { desc, result ->
+        if (desc.parent == null) {
+            def totalTests = result.testCount
+            def failedTests = result.failedTestCount
+            def passedTests = totalTests - failedTests
+
+            def green = "\u001B[32m"
+            def red = "\u001B[31m"
+            def reset = "\u001B[0m"
+
+            println "\nTotal tests: ${totalTests}, ${green}Passed: ${passedTests}${reset}, ${red}Failed: ${failedTests}${reset}"
+        }
+    }
 }
