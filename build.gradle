@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.danylo'
-version = '0.0.1-SNAPSHOT'
+archivesBaseName = 'fitness-project'
 sourceCompatibility = '11'
 
 repositories {
@@ -16,7 +16,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.flywaydb:flyway-core:8.5.12'
+    implementation 'org.flywaydb:flyway-core:9.16.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -58,3 +58,13 @@ test {
         }
     }
 }
+
+bootBuildImage {
+    imageName = 'fitness-app-image'
+}
+
+task runContainers(type: Exec) {
+    commandLine 'docker-compose', 'up'
+}
+
+task buildAndRun(dependsOn: [bootBuildImage, runContainers])
