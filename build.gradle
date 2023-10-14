@@ -61,6 +61,7 @@ test {
 
 bootBuildImage {
     imageName = 'fitness-app-image'
+    builder = 'paketobuildpacks/builder:tiny'
 }
 
 task runContainers(type: Exec) {
