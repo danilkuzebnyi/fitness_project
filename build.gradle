@@ -1,11 +1,11 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.14'
+    id 'org.springframework.boot' version '2.7.15'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
 group = 'org.danylo'
-version = '0.0.1-SNAPSHOT'
+archivesBaseName = 'fitness-project'
 sourceCompatibility = '11'
 
 repositories {
@@ -16,7 +16,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.flywaydb:flyway-core:8.5.12'
+    implementation 'org.flywaydb:flyway-core:9.16.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -43,4 +43,29 @@ task stage {
 
 test {
     useJUnitPlatform()
+
+    afterSuite { desc, result ->
+        if (desc.parent == null) {
+            def totalTests = result.testCount
+            def failedTests = result.failedTestCount
+            def passedTests = totalTests - failedTests
+
+            def green = "\u001B[32m"
+            def red = "\u001B[31m"
+            def reset = "\u001B[0m"
+
+            println "\nTotal tests: ${totalTests}, ${green}Passed: ${passedTests}${reset}, ${red}Failed: ${failedTests}${reset}"
+        }
+    }
 }
+
+bootBuildImage {
+    imageName = 'fitness-app-image'
+    builder = 'paketobuildpacks/builder:tiny'
+}
+
+task runContainers(type: Exec) {
+    commandLine 'docker-compose', 'up'
+}
+
+task buildAndRun(dependsOn: [bootBuildImage, runContainers])

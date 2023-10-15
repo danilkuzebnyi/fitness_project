@@ -1,0 +1,26 @@
+services:
+  db:
+    ports:
+      - 5432:5432
+    container_name: postgres-container
+    image: postgres
+    environment:
+      POSTGRES_DB: course-project-test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - C:\Users\Dania\postgres-container-data:/var/lib/postgresql/data
+    restart: always
+
+  app:
+    image: fitness-app-image
+    container_name: fitness-app-container
+    ports:
+      - 8081:8081
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/course-project-test
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - db
+    restart: always
