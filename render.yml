@@ -1,6 +1,0 @@
-services:
-  app:
-    type: web
-    build:
-      command: ./gradlew bootBuildImage
-    port: 8080
