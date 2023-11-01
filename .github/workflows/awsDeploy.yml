@@ -1,0 +1,44 @@
+name: Deploy Spring Boot App to AWS Elastic Beanstalk
+
+on:
+  push:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Build Docker image
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+          with:
+            arguments: bootBuildImage
+
+      - name: Login to AWS ECR
+        run: |
+          aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
+
+      - name: Tag Docker image
+        run: docker tag fitness-app-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
+
+      - name: Push Docker image to AWS ECR
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
+
+      - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
+        uses: aws-actions/aws-cli@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: eu-central-1
+          s3-bucket: fitness-app-bucket
+          s3-key: Dockerrun.aws.json
+          s3-object-acl: public-read
+
+      - name: Update Elastic Beanstalk environment
+        uses: aws-actions/aws-cli@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: eu-central-1
+          application-name: d-fitness
+          environment-name: D-fitness-env-docker
+          version-label: $GITHUB_SHA
