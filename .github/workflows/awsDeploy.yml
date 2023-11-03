@@ -14,11 +14,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      - name: Install Gradle
+        run: sudo apt install gradle
+
+      - name: Set PATH environment variable
+        run: export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+
       - name: Build Docker image
-#        uses: eskatos/gradle-command-action@v1.3.3
-#        with:
-#          arguments: bootBuildImage
-        run: ./gradlew bootBuildImage
+        uses: eskatos/gradle-command-action@v1.3.3
+        with:
+          arguments: bootBuildImage
 
       - name: Login to AWS ECR
         run: |
