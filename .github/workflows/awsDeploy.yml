@@ -15,10 +15,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build Docker image
-        uses: eskatos/gradle-command-action@v1.3.3
-        with:
-          arguments: bootBuildImage
-#        run: ./gradlew bootBuildImage
+#        uses: eskatos/gradle-command-action@v1.3.3
+#        with:
+#          arguments: bootBuildImage
+        run: ./gradlew bootBuildImage
 
       - name: Login to AWS ECR
         run: |
