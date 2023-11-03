@@ -27,10 +27,10 @@ jobs:
         run: sudo apt install gradle
 
       - name: Build Docker image
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: bootBuildImage
-        run: ./gradlew bootBuildImage
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: bootBuildImage
+#        run: ./gradlew bootBuildImage
 
 
 
