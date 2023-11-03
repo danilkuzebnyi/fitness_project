@@ -27,14 +27,13 @@ jobs:
 #        run: ./gradlew bootBuildImage
 
 
-      - name: Install pack CLI via the official buildpack Action
-        uses: buildpacks/github-actions/setup-pack@v4.8.1
 
-      - name: Build app with pack CLI & publish to GitHub Container Registry
-        run: |
-          pack build fitness-app-image:latest \
-              --builder paketobuildpacks/builder:base \
-              --path . \
+      - name: Build image
+        uses: mamezou-tech/buildpacks-action@master
+        with:
+          image: 'fitness-app-image'
+          tag: 'latest'
+          builder: 'paketobuildpacks/builder:tiny'
 
       - name: Login to AWS ECR
         run: |
