@@ -17,14 +17,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-#      - name: Install Gradle
-#        run: sudo apt install gradle
-
       - name: Build Docker image
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: bootBuildImage
         run: ./gradlew bootBuildImage
+
+      - name: Configure AWS credentials
+        run: aws configure
+
+      - name: Set permissions
+        run: chmod +x *
 
       - name: Login to AWS ECR
         run: |
