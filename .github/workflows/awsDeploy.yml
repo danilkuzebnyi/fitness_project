@@ -22,9 +22,9 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
-          with:
-            role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-github-actions-role
-            aws-region: eu-central-1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-github-actions-role
+          aws-region: eu-central-1
 #        uses: aws-actions/configure-aws-credentials@v4
 #        with:
 #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -42,8 +42,7 @@ jobs:
         run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
 
       - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
-        uses: aws-actions/aws-cli@v3
-#        uses: einaregilsson/beanstalk-deploy@v16
+        uses: einaregilsson/beanstalk-deploy@v16
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -53,8 +52,8 @@ jobs:
           s3-object-acl: public-read
 
       - name: Update Elastic Beanstalk environment
-        uses: aws-actions/aws-cli@v3
-#        uses: einaregilsson/beanstalk-deploy@v16
+#        uses: aws-actions/aws-cli@v3
+        uses: einaregilsson/beanstalk-deploy@v16
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
