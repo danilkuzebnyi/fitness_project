@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "{{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest",
+    "Name": "755628500184.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest",
     "Update": "true"
   },
   "Ports": [
