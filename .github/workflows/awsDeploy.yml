@@ -27,6 +27,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          audience: arn:aws:iam::github.com:oidc/sts/github.com
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
           aws-region: eu-central-1
 #        uses: aws-actions/configure-aws-credentials@v4
