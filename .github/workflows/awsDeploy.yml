@@ -52,15 +52,5 @@ jobs:
           region: eu-central-1
           application_name: d-fitness
           environment_name: D-fitness-env-docker
-          version_label: github_actions_test_1
+          version_label: ${{ github.sha }}
           deployment_package: Dockerrun.aws.json
-
-#      - name: Update Elastic Beanstalk environment
-#        uses: einaregilsson/beanstalk-deploy@v16
-#        with:
-#          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          region: eu-central-1
-#          application_name: d-fitness
-#          environment_name: D-fitness-env-docker
-#          version_label: $GITHUB_SHA
