@@ -52,7 +52,7 @@ jobs:
           region: eu-central-1
           application_name: d-fitness
           environment_name: D-fitness-env-docker
-          version_label: $GITHUB_SHA
+          version_label: github_actions_test_1
           deployment_package: Dockerrun.aws.json
 
 #      - name: Update Elastic Beanstalk environment
