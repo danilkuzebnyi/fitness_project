@@ -44,9 +44,9 @@ jobs:
       - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v16
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: eu-central-1
+#          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          region: eu-central-1
           application_name: d-fitness
           environment_name: D-fitness-env-docker
           version_label: $GITHUB_SHA
