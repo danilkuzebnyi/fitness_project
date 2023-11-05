@@ -52,5 +52,5 @@ jobs:
           region: eu-central-1
           application_name: d-fitness
           environment_name: D-fitness-env-docker
-          version_label: ${{ github.sha }}
+          version_label: $(git rev-parse --short "$GITHUB_SHA")
           deployment_package: Dockerrun.aws.json
