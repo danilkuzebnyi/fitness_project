@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
         run: |
-          aws elasticbeanstalk update-environment --version-label ${{ env.branch }}.${{ env.sha_short }} --application-name d-fitness --environment-name D-fitness-env-docker --deployment-package Dockerrun.aws.json
+          aws elasticbeanstalk update-environment --version-label ${{ env.branch }}.${{ env.sha_short }} --application-name d-fitness --environment-name D-fitness-env-docker --s3-bucket my-bucket --s3-key Dockerrun.aws.json
 #        uses: einaregilsson/beanstalk-deploy@v21
 #        with:
 #          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
