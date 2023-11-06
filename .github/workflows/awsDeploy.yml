@@ -30,6 +30,9 @@ jobs:
 #      - name: Build Docker image
 #        run: ./gradlew bootBuildImage
 
+      - name: Install AWS CLI
+        run: sudo apt install awscli
+
       - name: Get AWS session token
         run: aws sts get-session-token --output text --query SessionToken
         id: aws_session_token
