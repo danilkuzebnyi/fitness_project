@@ -40,6 +40,10 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-github-actions-role
           aws-region: eu-central-1
 
+      - name: Get AWS session token
+        run: aws sts get-session-token
+        id: aws_session_token
+
       - name: Login to AWS ECR
         run: |
           aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
@@ -51,14 +55,15 @@ jobs:
 #        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
 
       - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
-        run: |
-          aws elasticbeanstalk create-application-version --application-name d-fitness --environment-name D-fitness-env-docker --version-label cloud_deploy.add800c --source-bucket my-bucket --source-key Dockerrun.aws.json
-#        uses: einaregilsson/beanstalk-deploy@v21
-#        with:
-#          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          region: eu-central-1
-#          application_name: d-fitness
-#          environment_name: D-fitness-env-docker
-#          version_label: ${{ env.branch }}.${{ env.sha_short }}
-#          deployment_package: Dockerrun.aws.json
+#        run: |
+#          aws elasticbeanstalk create-application-version --application-name d-fitness --environment-name D-fitness-env-docker --version-label cloud_deploy.add800c --source-bucket my-bucket --source-key Dockerrun.aws.json
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_session_token: ${{ steps.get_aws_session_token.outputs.aws_session_token }}
+          region: eu-central-1
+          application_name: d-fitness
+          environment_name: D-fitness-env-docker
+          version_label: ${{ env.branch }}.${{ env.sha_short }}
+          deployment_package: Dockerrun.aws.json
