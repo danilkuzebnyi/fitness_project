@@ -3,9 +3,23 @@ name: Deploy to AWS Elastic Beanstalk
 on:
   push:
 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'information'
+        type: choice
+        options:
+          - information
+          - debug
+          - warning
+          - critical
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    needs: build
 
     permissions:
       id-token: write

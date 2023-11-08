@@ -1,5 +1,5 @@
 <#include 'structure.ftlh'>
 
-<h1>Welcome to our site, friend!</h1>
+<h1>Welcome to our site</h1>
 
 <#include 'popupImports.ftlh'>

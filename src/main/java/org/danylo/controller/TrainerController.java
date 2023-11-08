@@ -76,6 +76,22 @@ public class TrainerController {
                 .addObject("specializations", specializations);
     }
 
+    @GetMapping("/all")
+    public ModelAndView getAllTrainers(@RequestParam(defaultValue = "all") String specialization,
+                                        @RequestParam(defaultValue = "") String sorting) {
+        List<Trainer> trainers;
+        trainers = trainerService.getFilteredTrainers(specialization);
+        trainers = trainerService.getSortedTrainers(sorting, trainers);
+        trainerService.setTrainerData(trainers);
+        specializationService.setSpecializationsToTrainer(trainers);
+        List<Specialization> specializations = specializationRepository.showAllSpecializations();
+
+        return new ModelAndView("trainer/trainers")
+                .addObject("trainers", trainers)
+                .addObject("specialization", specialization)
+                .addObject("specializations", specializations);
+    }
+
     @GetMapping("/{id:[\\d]+}")
     public ModelAndView showTrainerPage(@PathVariable Integer id,
                                         @RequestParam(required = false) String date) {
