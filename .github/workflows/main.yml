@@ -1,0 +1,10 @@
+name: Main Workflow
+
+on:
+  push:
+
+jobs:
+  - name: Build
+    uses: ./.github/workflows/build.yml
+  - name: Deploy to AWS Elastic Beanstalk
+    uses: ./.github/workflows/awsDeploy.yml
