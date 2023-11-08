@@ -34,10 +34,6 @@ jobs:
         id: creds
         uses: aws-actions/configure-aws-credentials@v4
         with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: eu-central-1
-          audience: sts.amazonaws.com
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-github-actions-role
           aws-region: eu-central-1
           output-credentials: true
@@ -45,10 +41,6 @@ jobs:
       - name: get caller identity
         run: |
           aws sts get-caller-identity
-
-#      - name: Get AWS session token
-#        run: aws sts get-session-token
-#        id: aws_session_token
 
       - name: Login to AWS ECR
         run: |
@@ -61,13 +53,10 @@ jobs:
 #        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
 
       - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
-#        run: |
-#          aws elasticbeanstalk create-application-version --application-name d-fitness --environment-name D-fitness-env-docker --version-label cloud_deploy.add800c --source-bucket my-bucket --source-key Dockerrun.aws.json
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ steps.creds.outputs.aws-access-key-id }}
           aws_secret_key: ${{ steps.creds.outputs.aws-secret-access-key }}
-          aws_session_token: ${{ steps.creds.outputs.aws-session-token }}
           region: eu-central-1
           application_name: d-fitness
           environment_name: D-fitness-env-docker
