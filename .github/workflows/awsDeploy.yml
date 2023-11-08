@@ -2,17 +2,19 @@ name: Deploy to AWS Elastic Beanstalk
 
 on:
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'information'
-        type: choice
-        options:
-          - information
-          - debug
-          - warning
-          - critical
+    branches:
+      - cloud_deploy
+#    inputs:
+#      logLevel:
+#        description: 'Log level'
+#        required: true
+#        default: 'information'
+#        type: choice
+#        options:
+#          - information
+#          - debug
+#          - warning
+#          - critical
 
 jobs:
   deploy:
