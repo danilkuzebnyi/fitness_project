@@ -13,9 +13,6 @@ on:
           - debug
           - warning
           - critical
-  workflow_run:
-    types:
-      - completed
 
 jobs:
   deploy:
