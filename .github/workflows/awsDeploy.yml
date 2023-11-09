@@ -1,9 +1,9 @@
 name: Deploy to AWS Elastic Beanstalk
 
 on:
+  release:
+    types: [created]
   workflow_dispatch:
-    branches:
-      - 'cloud_deploy'
 
 #  workflow_dispatch:
 #    inputs:
