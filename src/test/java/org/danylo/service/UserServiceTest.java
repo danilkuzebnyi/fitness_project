@@ -54,7 +54,7 @@ class UserServiceTest {
     @Test
     void isUsernameExist_False_IfUserNotExist() {
         User user = new User();
-        user.setUsername("gorin@gmail.com");
+        user.setUsername("nouser@gmail.com");
 
         assertFalse(userService.isUsernameExist(user));
     }
