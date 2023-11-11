@@ -2,8 +2,6 @@ name: Deploy to AWS Elastic Beanstalk
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Build"]
 
 jobs:
   deploy:
