@@ -2,7 +2,6 @@ name: Build
 
 on:
   push:
-  workflow_dispatch:
 
 jobs:
   build:
@@ -27,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
+    if: github.event_name == 'push' && github.event_name == 'repository_dispatch'
 
     permissions:
       id-token: write
