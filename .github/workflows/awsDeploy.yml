@@ -7,8 +7,9 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    needs: build
+    if: ${{ needs.build.outputs.build-result == 'true' }}
 
     permissions:
       id-token: write
