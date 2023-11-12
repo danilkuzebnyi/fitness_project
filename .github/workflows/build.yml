@@ -23,10 +23,9 @@ jobs:
           arguments: build
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: manual
     needs:
       - build
-    if: ${{ github.event_name == 'push' && github.event_name == 'repository_dispatch' }}
 
     permissions:
       id-token: write
