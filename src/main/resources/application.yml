@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test
+    active: prod
 ---
 
 server:
@@ -36,7 +36,7 @@ app:
 ---
 
 server:
-  port: 8082
+  port: 5000
 spring:
   config:
     activate:
@@ -48,4 +48,4 @@ spring:
 mail:
   debug: false
 app:
-  url: https://d-fitness.herokuapp.com
+  url: http://dk-fitness.eu-central-1.elasticbeanstalk.com

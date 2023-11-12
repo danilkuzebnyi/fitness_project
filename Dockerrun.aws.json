@@ -1,0 +1,21 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Authentication": {
+    "Type": "OIDC",
+    "OIDC": {
+      "Provider": "token.actions.githubusercontent.com",
+      "RoleArn": "arn:aws:iam::755628500184:role/my-github-actions-role"
+    }
+  },
+  "Image": {
+    "Name": "755628500184.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "5000"
+    }
+  ],
+  "JVM_OPTS": "-XX:MaxDirectMemorySize=10M -XX:MaxMetaspaceSize=138303K -XX:ReservedCodeCacheSize=240M -Xss1M * 250 threads",
+  "BP_JAVA_BUILD_PACK_MEMORY_CALCULATOR": "https://github.com/pivotal/java-buildpack/releases/download/v5.6.4/java-buildpack-memory-calculator.jar"
+}
