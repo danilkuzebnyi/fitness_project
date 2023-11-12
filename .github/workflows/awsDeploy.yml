@@ -27,34 +27,34 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-#      - name: Build Docker image
-#        run: ./gradlew bootBuildImage
-#
-#      - name: Configure AWS credentials
-#        id: creds
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-github-actions-role
-#          aws-region: eu-central-1
-#          output-credentials: true
-#
-#      - name: Login to AWS ECR
-#        run: |
-#          aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
-#
-#      - name: Tag Docker image
-#        run: docker tag fitness-app-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
-#
-#      - name: Push Docker image to AWS ECR
-#        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
-#
-#      - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
-#        uses: einaregilsson/beanstalk-deploy@v21
-#        with:
-#          aws_access_key: ${{ steps.creds.outputs.aws-access-key-id }}
-#          aws_secret_key: ${{ steps.creds.outputs.aws-secret-access-key }}
-#          region: eu-central-1
-#          application_name: d-fitness
-#          environment_name: D-fitness-env-docker
-#          version_label: ${{ env.branch }}.${{ env.sha_short }}
-#          deployment_package: Dockerrun.aws.json
+      - name: Build Docker image
+        run: ./gradlew bootBuildImage
+
+      - name: Configure AWS credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-github-actions-role
+          aws-region: eu-central-1
+          output-credentials: true
+
+      - name: Login to AWS ECR
+        run: |
+          aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
+
+      - name: Tag Docker image
+        run: docker tag fitness-app-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
+
+      - name: Push Docker image to AWS ECR
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/fitness-app-repo:latest
+
+      - name: Upload Dockerrun.aws.json file to AWS Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ steps.creds.outputs.aws-access-key-id }}
+          aws_secret_key: ${{ steps.creds.outputs.aws-secret-access-key }}
+          region: eu-central-1
+          application_name: d-fitness
+          environment_name: D-fitness-env-docker
+          version_label: ${{ env.branch }}.${{ env.sha_short }}
+          deployment_package: Dockerrun.aws.json
