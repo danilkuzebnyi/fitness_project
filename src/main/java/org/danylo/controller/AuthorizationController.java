@@ -2,6 +2,7 @@ package org.danylo.controller;
 
 import org.danylo.model.Country;
 import org.danylo.model.User;
+import org.danylo.profiling.Profiling;
 import org.danylo.service.CountryService;
 import org.danylo.service.RecaptchaService;
 import org.danylo.service.UserService;
@@ -11,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -38,6 +43,7 @@ public class AuthorizationController {
     }
 
     @GetMapping("/login")
+    @Profiling
     public String getLogInForm(@ModelAttribute("user") User user, Model model) {
         if (httpSession.getAttribute("activationLink") != null) {
             Dialog.create(model, Message.CHECK_EMAIL);
