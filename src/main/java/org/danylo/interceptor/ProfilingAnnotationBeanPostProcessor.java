@@ -1,7 +1,8 @@
-package org.danylo.profiling;
+package org.danylo.interceptor;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.danylo.annotation.Profiling;
 import org.danylo.logging.Log;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;

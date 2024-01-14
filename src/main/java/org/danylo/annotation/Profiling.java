@@ -1,4 +1,4 @@
-package org.danylo.profiling;
+package org.danylo.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

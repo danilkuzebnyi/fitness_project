@@ -3,7 +3,7 @@ package org.danylo.service;
 import org.danylo.model.Sorting;
 import org.danylo.model.Trainer;
 import org.danylo.model.User;
-import org.danylo.profiling.Profiling;
+import org.danylo.annotation.Profiling;
 import org.danylo.repository.TrainerRepository;
 import org.danylo.repository.UserRepository;
 import org.danylo.web.Message;
