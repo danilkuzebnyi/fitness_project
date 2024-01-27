@@ -17,12 +17,11 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.danylo.logging.Log;
 import org.danylo.model.Trainer;
 import org.danylo.model.WorkingTime;
-import org.danylo.repository.WorkingTimeRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
@@ -34,7 +33,6 @@ import java.util.List;
 
 @Service
 public class ExportFileService {
-    private static final Logger logger = LoggerFactory.getLogger(WorkingTimeRepository.class);
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
 
@@ -44,7 +42,7 @@ public class ExportFileService {
         try {
             PdfWriter.getInstance(document, response.getOutputStream());
         } catch (IOException e) {
-            logger.info("File upload error");
+            Log.logger.info("File upload error");
         }
         document.open();
 
@@ -131,7 +129,7 @@ public class ExportFileService {
             workbook.write(outputStream);
             workbook.close();
         } catch (IOException e) {
-            logger.info("File upload error");
+            Log.logger.info("File upload error");
         }
     }
 

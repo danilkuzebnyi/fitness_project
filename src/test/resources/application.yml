@@ -9,3 +9,4 @@ mail:
   debug: false
 app:
   url: http://localhost:8081
+  profiling: false

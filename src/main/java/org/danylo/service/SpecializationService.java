@@ -1,12 +1,14 @@
 package org.danylo.service;
 
 import org.danylo.model.Trainer;
+import org.danylo.annotation.Profiling;
 import org.danylo.repository.SpecializationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Profiling
 public class SpecializationService {
     SpecializationRepository specializationRepository;
 

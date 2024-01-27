@@ -3,6 +3,7 @@ package org.danylo.service;
 import org.danylo.model.Sorting;
 import org.danylo.model.Trainer;
 import org.danylo.model.User;
+import org.danylo.annotation.Profiling;
 import org.danylo.repository.TrainerRepository;
 import org.danylo.repository.UserRepository;
 import org.danylo.web.Message;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Profiling
 public class TrainerService {
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;

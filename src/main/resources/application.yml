@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: test
 ---
 
 server:
@@ -33,6 +33,7 @@ mail:
   debug: true
 app:
   url: http://localhost:8081
+  profiling: true
 ---
 
 server:

@@ -1,5 +1,6 @@
 package org.danylo.service;
 
+import org.danylo.annotation.PostProxy;
 import org.danylo.logging.Log;
 import org.danylo.model.Country;
 import org.danylo.model.Status;
@@ -35,6 +36,11 @@ public class UserService implements UserDetailsService {
         this.countryService = countryService;
         this.mailSender = mailSender;
         this.httpSession = httpSession;
+    }
+
+    @PostProxy
+    public void logAppUrl() {
+        Log.logger.info("Application will be launched using the link " + url);
     }
 
     @Override
